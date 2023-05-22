@@ -1,0 +1,98 @@
+﻿namespace EpubBuilder.Core;
+
+/// <summary>
+/// Table of Contents
+/// Epub 电子书 目录
+/// </summary>
+public class Toc
+{
+    List<TocElement> _elements = new List<TocElement>();
+
+    public List<TocElement> Elements
+    {
+        get { return _elements; }
+    }
+
+    /// <summary>
+    /// 判断当前Toc的子元素列表是否为空
+    /// </summary>
+    public bool ChildrenIsEmpty()
+    {
+        if (_elements.Count == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// 将元素添加到所有子元素的最后
+    /// 如果该元素比最后的元素的Level小，则将其与最后的元素的子元素的Level进行比较。
+    /// 如果等级相同，或者是大于末尾的元素，则将其放在该元素的后面
+    /// </summary>
+    public void AddElem(TocElement tocElement)
+    {
+        if (_elements.Count == 0)
+        {
+            _elements.Add(tocElement);
+        }
+        else
+        {
+            _elements.Last().AddElement(tocElement);    
+        }
+    }
+
+    /// <summary>
+    /// 渲染Toc元素当前的目录
+    /// </summary>
+    public string RenderToc()
+    {
+        List<string> output = new List<string>();
+        int offset = 0;
+        foreach (var elem in _elements)
+        {
+            (int, string) tocTruple = elem.RenderToc(offset);
+            offset = tocTruple.Item1;
+            output.Add(tocTruple.Item2);
+        }
+
+        return String.Join("", output);
+    }
+
+    /// <summary>
+    /// 从PageList中生成Toc
+    /// </summary>
+    /// <param name="pageList"></param>
+    /// <param name="splitLevel"></param>
+    public void GenerateTocFromPageList(PageList pageList, int splitLevel)
+    {
+        // 使用深度优先挨个访问pageList的所有节点
+        throw new NotImplementedException();
+    }
+
+    public int AddTocElemFromPageElem(PageElement pageElem, int chapterNum, int splitLevel)
+    {
+        // TODO: 待写TestUnit
+        
+        if (splitLevel == pageElem.Level)
+        {
+            // 当splitLevel等于当前页面的等级的时候，说明之后的所有Page都是当前Chapter内部的标题
+            for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
+            {
+                TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}#subChapter{i}",
+                    pageElem.ChildrenPage[i].Heading);
+                AddElem(tocElem);
+            }
+        }
+        else if (splitLevel > pageElem.Level)
+        {
+            // 当splitLevel大于Page页面的等级的时候，说明当前Page的子页面是拥有单独页面的
+            for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
+            {
+                chapterNum = AddTocElemFromPageElem(pageElem.ChildrenPage[i], chapterNum, splitLevel);
+            }
+        }
+
+        return chapterNum += 1;
+    }
+}
