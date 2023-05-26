@@ -31,14 +31,16 @@ public class Toc
     /// 如果该元素比最后的元素的Level小，则将其与最后的元素的子元素的Level进行比较。
     /// 如果等级相同，或者是大于末尾的元素，则将其放在该元素的后面
     /// </summary>
-    public void AddElem(TocElement tocElement)
+    public void AddElement(TocElement tocElement)
     {
         if (_elements.Count == 0)
         {
+            // 如果当前 _elements 列表为零时，将元素直接添加到 _elements 列表中
             _elements.Add(tocElement);
         }
         else
         {
+            // 如果当前 _elements 元素不为空，则将其添加到当前 _elements 列表最末尾的元素中
             _elements.Last().AddElement(tocElement);
         }
     }
@@ -95,7 +97,7 @@ public class Toc
 
         // 将当前页面添加进 Toc
         TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading);
-        AddElem(tocElem);
+        AddElement(tocElem);
 
         if (splitLevel == pageElem.Level)
         {
@@ -104,7 +106,7 @@ public class Toc
  
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading));
+                AddElement(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading));
             }
         }
         else if (splitLevel > pageElem.Level)
