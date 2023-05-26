@@ -87,7 +87,7 @@ public class TocElement
     /// <summary>
     /// 为当前元素或者为其子元素添加元素
     /// </summary>
-    public void AddElement(TocElement tocElement)
+    public void AddElem(TocElement tocElement)
     {
         Log.AddLog($"TocElement {_title} add element {tocElement.Title}");
         if (_children.Count == 0)
@@ -103,7 +103,7 @@ public class TocElement
         else if (tocElement.Level > _children.Last().Level)
         {
             // 若当前元素的 Level 大于 当前元素最后一个子元素的 Level，则让其再与子元素的最后一个子元素进行比较，直到将其插入到合适位置
-            _children.Last().AddElement(tocElement);
+            _children.Last().AddElem(tocElement);
         }
     }
 

@@ -20,7 +20,7 @@ public class TestToc
     {
         Toc toc = new Toc();
         TocElement tocElement = new TocElement("114514", "1919810");
-        toc.AddElement(tocElement);
+        toc.AddElem(tocElement);
         
         bool result = toc.ChildrenIsEmpty();
         
@@ -32,7 +32,7 @@ public class TestToc
     {
         Toc toc = new Toc();
         TocElement tocElement = new TocElement("114514", "1919810");
-        toc.AddElement(tocElement);
+        toc.AddElem(tocElement);
 
         var unit = toc.Elements.Last();
         bool result = unit == tocElement;
@@ -47,8 +47,8 @@ public class TestToc
         TocElement tocElement = new TocElement("114514", "head_elem");
         TocElement childElem = new TocElement("child", "child_elem");
         childElem.Level = 2;
-        toc.AddElement(tocElement);
-        toc.AddElement(childElem);
+        toc.AddElem(tocElement);
+        toc.AddElem(childElem);
 
         bool result = (toc.Elements.Last().Title == "head_elem") &&
                       (toc.Elements.Last().Children.Last().Title == "child_elem");
@@ -61,7 +61,7 @@ public class TestToc
     {
         Toc toc = new Toc();
         TocElement tocElement = new TocElement("114514", "head_elem");
-        toc.AddElement(tocElement);
+        toc.AddElem(tocElement);
 
         string result = toc.RenderToc();
 
@@ -83,9 +83,9 @@ public class TestToc
         TocElement childElem_2 = new TocElement("child_2", "child_elem_2");
         childElem_1.Level = 2;
         childElem_2.Level = 2;
-        toc.AddElement(tocElement);
-        toc.AddElement(childElem_1);
-        toc.AddElement(childElem_2);
+        toc.AddElem(tocElement);
+        toc.AddElem(childElem_1);
+        toc.AddElem(childElem_2);
 
         string result = toc.RenderToc();
 
@@ -117,10 +117,10 @@ public class TestToc
         childElem_1.Level = 2;
         childElem_2.Level = 3;
         childElem_3.Level = 2;
-        toc.AddElement(tocElement);
-        toc.AddElement(childElem_1);
-        toc.AddElement(childElem_2);
-        toc.AddElement(childElem_3);
+        toc.AddElem(tocElement);
+        toc.AddElem(childElem_1);
+        toc.AddElem(childElem_2);
+        toc.AddElem(childElem_3);
 
         string result = toc.RenderToc();
 

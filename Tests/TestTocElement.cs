@@ -18,7 +18,7 @@ public class TocElementTest
     {
         TocElement tocElement = new TocElement("114514", "1919810");
         TocElement newElem = new TocElement("233333", "5555555");
-        tocElement.AddElement(newElem);
+        tocElement.AddElem(newElem);
         
         bool result = tocElement.ChildrenIsEmpty();
         
@@ -96,8 +96,8 @@ public class TocElementTest
         TocElement childElem_2 = new TocElement("url:test_1", "child_two");
         
         tocElement_1.AddChild((childElem_1));
-        tocElement_1.AddElement(childElem_2);
-        tocElement_1.AddElement(tocElement_2);
+        tocElement_1.AddElem(childElem_2);
+        tocElement_1.AddElem(tocElement_2);
 
         (int, string) result = tocElement_1.RenderToc(0);
         string test = "<navPoint id=\"navPoint-1\">\n" +
@@ -131,10 +131,10 @@ public class TocElementTest
         TocElement childElem_1 = new TocElement("url:test_1", "child_one");
         TocElement childElem_2 = new TocElement("url:test_1", "child_two");
         tocElement_1.AddChild(childElem_1);
-        tocElement_2.AddElement(childElem_2);
+        tocElement_2.AddElem(childElem_2);
         
-        tocElement.AddElement(tocElement_1);
-        tocElement.AddElement(tocElement_2);
+        tocElement.AddElem(tocElement_1);
+        tocElement.AddElem(tocElement_2);
 
         (int, string) result = tocElement.RenderToc(0);
 
