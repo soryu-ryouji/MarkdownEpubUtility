@@ -71,9 +71,16 @@ public class Toc
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// 使用 PageElem 向 Toc 中添加 TocElem
+    /// </summary>
+    /// <param name="pageElem"></param>
+    /// <param name="chapterNum"></param>
+    /// <param name="splitLevel"></param>
+    /// <returns></returns>
     public int AddTocElemFromPageElem(PageElement pageElem, int chapterNum, int splitLevel)
     {
-        // 在实例化Toc类后，该方法会根据PageElem的Level和SplitLevel自动向Toc中添加TocElem
+        // 在实例化Toc类后，该方法会根据 PageElem 的 Level 和 splitLevel 自动向 Toc 中添加 TocElem
         // Example:
         // FirstPage
         // |—— SecondPage_1
@@ -81,30 +88,30 @@ public class Toc
         // |   |—— ThirdPage_2
         // |—— SecondPage_2
         // 
-        // 当SplitLevel为2时，其Toc结构为
+        // 当 splitLevel 为2时，其 Toc 结构为
         // FirstPage
         // |—— SecondPage_1
         // |—— SecondPage_2
 
+        // 将当前页面添加进 Toc
+        TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading);
+        AddElem(tocElem);
+
         if (splitLevel == pageElem.Level)
         {
-            // 当splitLevel等于当前页面的等级的时候，说明之后的所有Page都是当前Chapter内部的标题
-            // 因此将该Page下的所有子页面全部标记为subChapter
+            // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
+            // 因此将该 pageElem 的 ChildrenPage 里所有的元素标记为 subChapter
+ 
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}#subChapter{i}",
-                    pageElem.ChildrenPage[i].Heading);
-                AddElem(tocElem);
+                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading));
             }
         }
         else if (splitLevel > pageElem.Level)
         {
-            // 当splitLevel大于Page页面的等级的时候，说明当前Page的子页面是拥有单独页面的
-            // 因此递归调用AddTocElemFromPageElem方法，直到到达SplitLevel
-            // 为当前PageElem生成一个TocElem
-            TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading);
-            AddElem(tocElem);
-            
+            // 当splitLevel大于Page页面的等级的时候，说明当前Page的ChildrenPage是会生成单独xhtml文件的
+            // 因此递归调用AddTocElemFromPageElem方法将其添加到Toc，直到ChildrenPage的Level与SplitLevel相等
+
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
                 // 递归当前PageElem的子元素
