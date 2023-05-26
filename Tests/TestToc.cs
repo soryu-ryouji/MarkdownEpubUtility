@@ -144,4 +144,10 @@ public class TestToc
         
         Assert.IsTrue(isTrue);
     }
+
+    [Test]
+    public void AddTocElemFromPageElem()
+    {
+        throw new NotImplementedException();
+    }
 }
