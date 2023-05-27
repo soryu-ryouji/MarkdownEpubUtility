@@ -7,7 +7,9 @@
 - mimetype
 
 ## mimetype
+
 每一个epub电子书均包含一个名为mimtype的文件，且内容不变，用以说明epub的文件格式。文件内容为
+
 ```
 application/epub+zip
 ```
@@ -59,7 +61,6 @@ OPF文档是epub的核心文件，且是一个标准的xml文件，依据OPF规�
 
 `<dc-metadata>`，其元素构成采用dubline core(DC)的15项核心元素
 
-
 - `<dc-title>` : 标题
 - `<dc-creator>` : 责任者
 - `<dc-subject>` : 主题词或关键词
@@ -78,11 +79,11 @@ OPF文档是epub的核心文件，且是一个标准的xml文件，依据OPF规�
 
 `<x-metadata>`,该metadata为扩展元素。如果有些信息在上述元素中无法描述，则在此元素中进行扩展。
 
+每一个`metadata`部分至少需要包含一个`language`
+元素，其值需要符合[[RFC5646]](https://datatracker.ietf.org/doc/html/rfc5646)
 
-
-每一个`metadata`部分至少需要包含一个`language`元素，其值需要符合[[RFC5646]](https://datatracker.ietf.org/doc/html/rfc5646)
-
-`<dc-identifier>`对于一个且仅是一个特定的 EPUB 出版物是唯一的。此唯一标识符，无论是选择还是分配，都必须存储在包元数据中的 dc:identifier 元素中，并在包元素唯一标识符属性中作为唯一标识符引用。尽管不是静态的，但应尽可能少地更改出版物的唯一标识符。
+`<dc-identifier>`对于一个且仅是一个特定的 EPUB 出版物是唯一的。此唯一标识符，无论是选择还是分配，都必须存储在包元数据中的
+dc:identifier 元素中，并在包元素唯一标识符属性中作为唯一标识符引用。尽管不是静态的，但应尽可能少地更改出版物的唯一标识符。
 
 在更新元数据、修复勘误表或对出版物进行其他微小更改时，不应发布新的标识符。而是使用`modified`属性
 
@@ -92,8 +93,6 @@ OPF文档是epub的核心文件，且是一个标准的xml文件，依据OPF规�
     <meta property="dcterms:modified">2011-01-01T12:00:00Z</meta>
 </metadata>
 ```
-
-
 
 #### 2、manifest
 
@@ -138,9 +137,17 @@ OPF文档是epub的核心文件，且是一个标准的xml文件，依据OPF规�
 
 #### 4、guide（V3已废弃）
 
-> The `guide` element [[OPF2\]](https://idpf.org/epub/30/spec/epub30-publications.html#refOPF2) is deprecated in favor of the `landmarks` feature in the [EPUB Navigation Document](https://idpf.org/epub/30/spec/epub30-publications.html#gloss-content-document-epub-nav). Refer to [The landmarks nav Element](https://idpf.org/epub/30/spec/epub30-contentdocs.html#sec-xhtml-nav-def-types-landmarks) [[ContentDocs30\]](https://idpf.org/epub/30/spec/epub30-publications.html#refContentDocs3) for more information.
+> The `guide` element [[OPF2\]](https://idpf.org/epub/30/spec/epub30-publications.html#refOPF2) is deprecated in favor
+> of the `landmarks` feature in
+> the [EPUB Navigation Document](https://idpf.org/epub/30/spec/epub30-publications.html#gloss-content-document-epub-nav).
+> Refer
+> to [The landmarks nav Element](https://idpf.org/epub/30/spec/epub30-contentdocs.html#sec-xhtml-nav-def-types-landmarks) [[ContentDocs30\]](https://idpf.org/epub/30/spec/epub30-publications.html#refContentDocs3)
+> for more information.
 >
-> Authors may include the `guide` element in the Package Document for EPUB 2 Reading System forwards  compatibility purposes. EPUB 3 Reading Systems must ignore the `guide` element when provided in EPUB 3 Publications whose [EPUB Navigation Document](https://idpf.org/epub/30/spec/epub30-publications.html#gloss-content-document-epub-nav) includes the `landmarks` feature.
+> Authors may include the `guide` element in the Package Document for EPUB 2 Reading System forwards compatibility
+> purposes. EPUB 3 Reading Systems must ignore the `guide` element when provided in EPUB 3 Publications
+> whose [EPUB Navigation Document](https://idpf.org/epub/30/spec/epub30-publications.html#gloss-content-document-epub-nav)
+> includes the `landmarks` feature.
 
 一次列出电子书的特定页面，例如封面、目录、序言等，属性值指向文件保存地址。一般情况下，epub电子书可以不用该元素。
 
@@ -218,8 +225,6 @@ nvaPoint节点可以嵌套，嵌套的层次就是目录的层次
 ```
 
 在navPoint中，`id`就是`manifest`中定义的文件id，而`playOrder`则用于控制目录的显示顺序，但是Epub格式规范中并不对此强制要求。
-
-
 
 可能会有有人觉得.opf文件与.ncx文件有一点重复：.opf文件的item节点中的href属性描述了各个章节文件的位置与顺序，.ncx文件中的conten节点中的src属性也描述了各个章节文件的位置与顺序。
 
