@@ -97,6 +97,7 @@ public class Toc
 
         // 将当前页面添加进 Toc
         TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading);
+        tocElem.Level = pageElem.Level;
         AddElem(tocElem);
 
         if (splitLevel == pageElem.Level)
@@ -106,7 +107,7 @@ public class Toc
  
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading));
+                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading,pageElem.Level+1));
             }
         }
         else if (splitLevel > pageElem.Level)
@@ -122,5 +123,43 @@ public class Toc
         }
 
         return chapterNum += 1;
+    }
+
+    public void PrintTocListStruct()
+    {
+        foreach (var unit in _elements)
+        {
+            PrintTocStruct(unit);
+        }
+    }
+
+    public static void PrintTocStruct(TocElement tocElem)
+    {
+        string space = "——";
+        Console.WriteLine(RepeatString(space,tocElem.Level-1) + tocElem.Title + "  " + tocElem.Level);
+        
+        if (tocElem.Children.Count != 0)
+        {
+            foreach (var subToc in tocElem.Children)
+            {
+                PrintTocStruct(subToc);
+            }
+        }
+    }
+    
+    public static string RepeatString(string str, int times)
+    {
+        if (times == 0)
+        {
+            return "";
+        }
+        
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        for (int i = 0; i < times; i++)
+        {
+            sb.Append(str);
+        }
+
+        return sb.ToString();
     }
 }
