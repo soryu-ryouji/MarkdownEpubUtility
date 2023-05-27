@@ -27,15 +27,15 @@ public class PageList
     /// <summary>
     /// 打印当前PageList的元素
     /// </summary>
-    public void PrintPageList()
+    public void PrintPageListStruct()
     {
         foreach (var unit in Pages)
         {
-            PrintPage(unit);
+            PrintPageChildrenStruct(unit);
         }
     }
 
-    public static void PrintPage(PageElement pageElement)
+    public static void PrintPageChildrenStruct(PageElement pageElement)
     {
         string space = "——";
         Console.WriteLine(RepeatString(space,pageElement.Level-1) + pageElement.Heading);
@@ -44,7 +44,7 @@ public class PageList
         {
             foreach(var subPage in pageElement.ChildrenPage)
             {
-                PrintPage(subPage);
+                PrintPageChildrenStruct(subPage);
             }
         }
     }
