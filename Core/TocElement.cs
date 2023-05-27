@@ -37,6 +37,14 @@ public class TocElement
         _title = title;
         _children = new List<TocElement>();
     }
+    
+    public TocElement(string url, string title, int level)
+    {
+        _level = level;
+        _url = url;
+        _title = title;
+        _children = new List<TocElement>();
+    }
 
     /// <summary>
     /// 判断当前元素的子元素是否为空
