@@ -38,6 +38,11 @@ public class Toc
             // 如果当前 _elements 列表为零时，将元素直接添加到 _elements 列表中
             _tocElemList.Add(tocElement);
         }
+        else if (tocElement.Level == 1)
+        {
+            // 如果当前tocElement的Level为1，则将其添加到tocElemList中
+            _tocElemList.Add(tocElement);
+        }
         else
         {
             // 如果当前 _elements 元素不为空，则将其添加到当前 _elements 列表最末尾的元素中
@@ -69,8 +74,13 @@ public class Toc
     /// <param name="splitLevel"></param>
     public void GenerateTocFromPageList(PageList pageList, int splitLevel)
     {
-        // 使用深度优先挨个访问pageList的所有节点
-        throw new NotImplementedException();
+        // 遍历 pageList.PageElemList 中的元素生成Toc
+        // PageElemList 的子元素 AddTocElemFromPageElem 会自动递归添加到Toc中
+        int chapterNum = 0;
+        foreach (var unit in pageList.PageElemList)
+        {
+            chapterNum = AddTocElemFromPageElem(unit, chapterNum, splitLevel);
+        }
     }
 
     /// <summary>
@@ -96,10 +106,11 @@ public class Toc
         // |—— SecondPage_2
 
         // 将当前页面添加进 Toc
-        TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading);
+        TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading, pageElem.Level);
         tocElem.Level = pageElem.Level;
         AddElem(tocElem);
 
+        // 这里判断子元素是否需要继续递归
         if (splitLevel == pageElem.Level)
         {
             // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
@@ -107,7 +118,10 @@ public class Toc
  
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}", pageElem.ChildrenPage[i].Heading,pageElem.Level+1));
+                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}",
+                    pageElem.ChildrenPage[i].Heading,
+                    pageElem.Level+1)
+                );
             }
         }
         else if (splitLevel > pageElem.Level)
