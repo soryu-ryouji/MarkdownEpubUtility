@@ -34,7 +34,7 @@ public class TestToc
         TocElement tocElement = new TocElement("114514", "1919810");
         toc.AddElem(tocElement);
 
-        var unit = toc.Elements.Last();
+        var unit = toc.TocElemList.Last();
         bool result = unit == tocElement;
         
         Assert.IsTrue(result);
@@ -50,8 +50,8 @@ public class TestToc
         toc.AddElem(tocElement);
         toc.AddElem(childElem);
 
-        bool result = (toc.Elements.Last().Title == "head_elem") &&
-                      (toc.Elements.Last().Children.Last().Title == "child_elem");
+        bool result = (toc.TocElemList.Last().Title == "head_elem") &&
+                      (toc.TocElemList.Last().Children.Last().Title == "child_elem");
         
         Assert.IsTrue(result);
     }
@@ -148,6 +148,45 @@ public class TestToc
     [Test]
     public void AddTocElemFromPageElem()
     {
-        throw new NotImplementedException();
+        // PageList Struct:
+        // page1
+        // |—— page2
+        // |—— page3
+        // |   |—— page4
+        // |   |—— page5
+        // |—— page6
+        PageList pageList = new PageList();
+        PageElement page1 = new PageElement(1,"page1");
+        PageElement page2 = new PageElement(2,"page2");
+        PageElement page3 = new PageElement(2,"page3");
+        PageElement page4 = new PageElement(3,"page4");
+        PageElement page5 = new PageElement(3,"page5");
+        PageElement page6 = new PageElement(2,"page6");
+
+        pageList.AddPageElem(page1,2);
+        pageList.AddPageElem(page2,2);
+        pageList.AddPageElem(page3,2);
+        pageList.AddPageElem(page4,2);
+        pageList.AddPageElem(page5,2);
+        pageList.AddPageElem(page6,2);
+
+        Toc toc = new Toc();
+
+        toc.AddTocElemFromPageElem(pageList.PageElemList[0],0,2);
+
+        // Toc Struct:
+        // page1
+        // |—— page2
+        // |—— page3
+        // |   |—— page4
+        // |   |—— page5
+        // |—— page6
+        bool isTrue = toc.TocElemList[0].Title == "page1" &&
+                      toc.TocElemList[0].Children[0].Title == "page2" &&
+                      toc.TocElemList[0].Children[1].Title == "page3" &&
+                      toc.TocElemList[0].Children[1].Children[0].Title == "page4" &&
+                      toc.TocElemList[0].Children[1].Children[1].Title == "page5" &&
+                      toc.TocElemList[0].Children[2].Title == "page6";
+        Assert.IsTrue(isTrue);
     }
 }
