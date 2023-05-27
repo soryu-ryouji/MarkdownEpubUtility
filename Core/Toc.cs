@@ -136,7 +136,7 @@ public class Toc
     public static void PrintTocStruct(TocElement tocElem)
     {
         string space = "——";
-        Console.WriteLine(RepeatString(space,tocElem.Level-1) + tocElem.Title + "  " + tocElem.Level);
+        Console.WriteLine(RepeatString(space,tocElem.Level-1) + tocElem.Title);
         
         if (tocElem.Children.Count != 0)
         {
