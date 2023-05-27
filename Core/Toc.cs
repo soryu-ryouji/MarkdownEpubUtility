@@ -6,11 +6,11 @@
 /// </summary>
 public class Toc
 {
-    List<TocElement> _elements = new List<TocElement>();
+    List<TocElement> _tocElemList = new List<TocElement>();
 
-    public List<TocElement> Elements
+    public List<TocElement> TocElemList
     {
-        get { return _elements; }
+        get { return _tocElemList; }
     }
 
     /// <summary>
@@ -18,7 +18,7 @@ public class Toc
     /// </summary>
     public bool ChildrenIsEmpty()
     {
-        if (_elements.Count == 0)
+        if (_tocElemList.Count == 0)
         {
             return true;
         }
@@ -33,15 +33,15 @@ public class Toc
     /// </summary>
     public void AddElem(TocElement tocElement)
     {
-        if (_elements.Count == 0)
+        if (_tocElemList.Count == 0)
         {
             // 如果当前 _elements 列表为零时，将元素直接添加到 _elements 列表中
-            _elements.Add(tocElement);
+            _tocElemList.Add(tocElement);
         }
         else
         {
             // 如果当前 _elements 元素不为空，则将其添加到当前 _elements 列表最末尾的元素中
-            _elements.Last().AddElem(tocElement);
+            _tocElemList.Last().AddElem(tocElement);
         }
     }
 
@@ -52,7 +52,7 @@ public class Toc
     {
         List<string> output = new List<string>();
         int offset = 0;
-        foreach (var elem in _elements)
+        foreach (var elem in _tocElemList)
         {
             (int, string) tocTruple = elem.RenderToc(offset);
             offset = tocTruple.Item1;
@@ -127,7 +127,7 @@ public class Toc
 
     public void PrintTocListStruct()
     {
-        foreach (var unit in _elements)
+        foreach (var unit in _tocElemList)
         {
             PrintTocStruct(unit);
         }
