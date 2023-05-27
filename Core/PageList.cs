@@ -23,4 +23,45 @@ public class PageList
             Pages.Last().AddPageElem(pageElement, limitLevel);
         }
     }
+
+    /// <summary>
+    /// 打印当前PageList的元素
+    /// </summary>
+    public void PrintPageList()
+    {
+        foreach (var unit in Pages)
+        {
+            PrintPage(unit);
+        }
+    }
+
+    public static void PrintPage(PageElement pageElement)
+    {
+        string space = "——";
+        Console.WriteLine(RepeatString(space,pageElement.Level-1) + pageElement.Heading);
+
+        if (pageElement.ChildrenPage.Count != 0)
+        {
+            foreach(var subPage in pageElement.ChildrenPage)
+            {
+                PrintPage(subPage);
+            }
+        }
+    }
+
+    public static string RepeatString(string str, int times)
+    {
+        if (times == 0)
+        {
+            return "";
+        }
+        
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        for (int i = 0; i < times; i++)
+        {
+            sb.Append(str);
+        }
+
+        return sb.ToString();
+    }
 }
