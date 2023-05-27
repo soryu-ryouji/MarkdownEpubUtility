@@ -12,7 +12,7 @@ public class TestPageList
         PageList pageList = new PageList();
         PageElement pageElement = new PageElement(1, "1_level_heading");
         pageList.AddPageElem(pageElement,2);
-        var target = pageList.Pages.Last();
+        var target = pageList.PageElemList.Last();
 
         bool isTrue = target == pageElement;
         
@@ -27,8 +27,8 @@ public class TestPageList
         PageElement pageElement_2 = new PageElement(1, "1_level_heading_2");
         pageList.AddPageElem(pageElement_1,2);
         pageList.AddPageElem(pageElement_2,2);
-        var target_1 = pageList.Pages[0];
-        var target_2 = pageList.Pages[1];
+        var target_1 = pageList.PageElemList[0];
+        var target_2 = pageList.PageElemList[1];
 
         bool isTrue = (target_1 == pageElement_1) && (target_2 == pageElement_2);
         
@@ -46,9 +46,9 @@ public class TestPageList
         pageList.AddPageElem(pageElement_2,2);
         pageList.AddPageElem(pageElement_3,2);
 
-        var target_1 = pageList.Pages.Last();
-        var target_2 = pageList.Pages.Last().ChildrenPage.First();
-        var target_3 = pageList.Pages.Last().ChildrenPage.Last();
+        var target_1 = pageList.PageElemList.Last();
+        var target_2 = pageList.PageElemList.Last().ChildrenPage.First();
+        var target_3 = pageList.PageElemList.Last().ChildrenPage.Last();
 
         bool isTrue = (target_1 == pageElement_1) && (target_2 == pageElement_2) && (target_3 == pageElement_3);
         
@@ -68,10 +68,10 @@ public class TestPageList
         pageList.AddPageElem(pageElement_3,2);
         pageList.AddPageElem(pageElement_4,2);
 
-        var target_1 = pageList.Pages.Last();
-        var target_2 = pageList.Pages.Last().ChildrenPage[0];
-        var target_3 = pageList.Pages.Last().ChildrenPage[1];
-        var target_4 = pageList.Pages.Last().ChildrenPage[1].ChildrenPage.Last();
+        var target_1 = pageList.PageElemList.Last();
+        var target_2 = pageList.PageElemList.Last().ChildrenPage[0];
+        var target_3 = pageList.PageElemList.Last().ChildrenPage[1];
+        var target_4 = pageList.PageElemList.Last().ChildrenPage[1].ChildrenPage.Last();
 
         bool isTrue = (target_1 == pageElement_1) && (target_2 == pageElement_2) && (target_3 == pageElement_3) &&
                       (target_4 == pageElement_4);

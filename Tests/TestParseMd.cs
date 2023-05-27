@@ -33,10 +33,10 @@ public class TestParseMd
         //     Console.WriteLine(unit.Content[0]);
         // }
         
-        bool targetOne = headingOne == list.Pages[0].Heading;
-        bool targetOneContent = headingOneContent == list.Pages[0].Content[0];
-        bool targetTwo = headingTwo == list.Pages[1].Heading;
-        bool targetTwoContent = headingTwoContent == list.Pages[1].Content[0];
+        bool targetOne = headingOne == list.PageElemList[0].Heading;
+        bool targetOneContent = headingOneContent == list.PageElemList[0].Content[0];
+        bool targetTwo = headingTwo == list.PageElemList[1].Heading;
+        bool targetTwoContent = headingTwoContent == list.PageElemList[1].Content[0];
 
         bool isTrue = targetOne && targetTwo && targetOneContent && targetTwoContent;
         
