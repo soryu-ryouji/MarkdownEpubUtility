@@ -27,7 +27,7 @@ public class Common
         fl.Delete();
 
         using (StreamWriter sw = new StreamWriter(targetPath)) {
-            sw.Write(targetPath);
+            sw.Write(content);
         }
     }
 }
