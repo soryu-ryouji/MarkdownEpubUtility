@@ -43,6 +43,7 @@ class ParseMd
         PageElement newPage = new PageElement(GetHeadingLevel(markdownList.First()),GetHeadingText(markdownList.First()));
         PageElement curPage = newPage;
         pageList.AddPageElem(newPage,splitLevel);
+        curPage.Content.Add(markdownList.First());
         // 因为提前获取了markdown的第一行，因此将第一行移除，避免之后重复创建
         markdownList.RemoveAt(0);
 
@@ -58,8 +59,6 @@ class ParseMd
                 PageElement page = new PageElement(level, GetHeadingText(line));
                 curPage = page;
                 pageList.AddPageElem(page,splitLevel);
-                // 获取标题之后，跳过当前行
-                continue;
             }
             
             curPage.Content.Add(line);
