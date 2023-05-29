@@ -13,4 +13,21 @@ public class Common
 
         return lines;
     }
+
+    /// <summary>
+    /// 向指定路径导出指定文本
+    /// </summary>
+    /// <param name="targetPath"></param>
+    /// <param name="content"></param>
+    public static void OutputText(string targetPath, string content)
+    {
+        FileInfo fl = new FileInfo(targetPath);
+        FileStream fs = fl.Create();
+        fs.Close();
+        fl.Delete();
+
+        using (StreamWriter sw = new StreamWriter(targetPath)) {
+            sw.Write(targetPath);
+        }
+    }
 }
