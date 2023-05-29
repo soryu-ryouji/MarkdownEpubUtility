@@ -23,6 +23,12 @@ eb -m D:/markdown.md -b D:/BuildBook -c D:/cover.jpg -d
 
 [Epub电子书格式](./Docs/Epub电子书格式.md)
 
+## Todo List
+
+- [x] 多级目录的实现
+- [ ] markdown文本渲染
+- [ ] markdown图像文件插入
+
 ## LICENSE
 
 ![MIT](./Docs/Images/MIT.png)
