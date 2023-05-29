@@ -1,4 +1,4 @@
-﻿using Markdig.Extensions.Figures;
+﻿using System.Reflection.Metadata;
 
 namespace EpubBuilder.Core;
 
@@ -6,6 +6,7 @@ public class Epub
 {
     private EpubVersion _version = EpubVersion.V30;
     private Metadata _metadata = new Metadata();
+    private List<EpubContent> _epubContents = new List<EpubContent>();
 
     /// <summary>
     /// 向 epub 的 metadata 中添加数据
@@ -55,6 +56,29 @@ public class Epub
         string tocNcx = GenerateToc(pageList);
         // 使用 pageList 生成 opf 文档内容
         string opf = GenerateOpf(pageList, splitLevel);
+        
+        
+        // 创建存储文件的基础目录
+        string epubDir = Path.Combine(buildedData.BuildPath, _metadata.Title);
+        Directory.CreateDirectory(epubDir);
+        // 创建 META-INF, OEBPS, OEBPS/Text/, OEBPS/Images/, OEBPS/Styles文件夹
+        Directory.CreateDirectory(Path.Combine(epubDir, "META-INF"));
+        Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Text"));
+        Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Images"));
+        Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Styles"));
+        // 导出 mimetype 文件
+        Common.OutputText(Path.Combine(epubDir,"mimetype"),"application/epub+zip");
+        // 导出 container.xml文件
+        Common.OutputText(Path.Combine(epubDir, "META-INF"), "<?xml version=\"1.0\"?>\n" +
+                                                             "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">" +
+                                                             "<rootfiles>\n" +
+                                                             "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n" +
+                                                             "</rootfiles>\n" +
+                                                             "</container>");
+        // 导出 toc.ncx文件
+        Common.OutputText(Path.Combine(epubDir,"OEBPS","toc.ncx"),tocNcx);
+        // 导出 content.opf 文件
+        Common.OutputText(Path.Combine(epubDir,"OEBPS","content.opf"),opf);
         
         throw new NotImplementedException();
     }
@@ -154,13 +178,49 @@ public class Epub
         
         // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
         if (pageElem.ChildrenPage.Count != 0)
-        { 
+        {
             // 递归进子节点
             if (splitLevel > pageElem.Level)
             {
                 foreach (var unit in pageElem.ChildrenPage)
                 {
                     chapterNum = GenerateOpfManifestPageItem(manifestList, unit, chapterNum, splitLevel);
+                }
+            }
+        }
+
+        return chapterNum;
+    }
+
+    public List<EpubContent> GenerateEpubContentListFromPageList(PageList pageList, int splitLevel)
+    {
+        int chapterNum = 0;
+        List<EpubContent> epubContents = new List<EpubContent>();
+        
+        foreach (var unit in pageList.PageElemList)
+        {
+            chapterNum = AddEpubContentFromPageElem(epubContents, unit, chapterNum, splitLevel);
+        }
+
+        return epubContents;
+    }
+
+    public int AddEpubContentFromPageElem(List<EpubContent> epubContents, PageElement pageElem, int chapterNum, int splitLevel)
+    {
+        // 为当前的 pageElem 添加 item
+        epubContents.Add(new EpubContent(EpubContentType.Html,$"chapter_{chapterNum}", 
+            ParseMd.Md2Html(String.Join("\n",pageElem.Content))));
+        chapterNum++;
+        
+        // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
+        if (pageElem.ChildrenPage.Count != 0)
+        {
+            // 递归进子节点
+            if (splitLevel > pageElem.Level)
+            {
+                foreach (var unit in pageElem.ChildrenPage)
+                {
+                    chapterNum = AddEpubContentFromPageElem(epubContents, unit, chapterNum, splitLevel);
                 }
             }
         }
