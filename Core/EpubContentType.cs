@@ -7,5 +7,6 @@ public enum EpubContentType
     Ncx,
     Mimetype,
     Container,
-    Opf
+    Opf,
+    Css,
 }
