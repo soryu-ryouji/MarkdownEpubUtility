@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using CompressionLevel = Ionic.Zlib.CompressionLevel;
 using ZipFile = Ionic.Zip.ZipFile;
+using System;
 namespace EpubBuilder.Core;
 
 public class Epub
@@ -46,21 +47,24 @@ public class Epub
     /// <summary>
     /// 依照当前Epub数据，生成Epub电子书
     /// </summary>
-    public void Generate(BuildedData buildedData, int splitLevel)
+    public void Generate(BuildedData buildedData)
     {
+        // 通过 buildedData 生成 metadata
+        GetMetadata(buildedData);
+        
         // 读入markdown文本行
         List<string> mdLines = Common.ReadLines(buildedData.MdPath);
         // 将markdown文本行切分为PageList
-        PageList pageList = ParseMd.SplitPage(mdLines, splitLevel);
+        PageList pageList = ParseMd.SplitPage(mdLines, buildedData.SplitLevel);
         // 使用 pageList 生成 Toc 文档内容
         string tocNcx = GenerateToc(pageList);
         // 使用 pageList 生成 opf 文档内容
-        string opf = GenerateOpf(pageList, splitLevel);
+        string opf = GenerateOpf(pageList, buildedData.SplitLevel, buildedData);
 
         List<EpubContent> epubContents = new List<EpubContent>();
 
         // 将 pageList 内容添加进 epubContents
-        epubContents.AddRange(GenerateEpubContentListFromPageList(pageList, splitLevel));
+        epubContents.AddRange(GenerateEpubContentListFromPageList(pageList, buildedData.SplitLevel));
         // 将 toc.ncx 内容添加进 epubContents
         epubContents.Add(new EpubContent(EpubContentType.Ncx, "toc.ncx", tocNcx));
         // 将 mimetype 内容添加进 epubContents
@@ -74,6 +78,11 @@ public class Epub
             "</container>"));
         // 将 opf 内容添加进 epubContents
         epubContents.Add(new EpubContent(EpubContentType.Opf,"content.opf",opf));
+
+        if (buildedData.CoverPath != "")
+        {
+            epubContents.Add(new EpubContent(EpubContentType.Image,"cover.jpg",buildedData.CoverPath));
+        }
         
         // 创建存储文件的基础目录
         string epubDir = Path.Combine(buildedData.BuildPath, _metadata.Title);
@@ -87,6 +96,50 @@ public class Epub
             epubFile.CompressionLevel = CompressionLevel.None;
             epubFile.AddDirectory(epubDir);
             epubFile.Save();
+        }
+    }
+
+    public void GetMetadata(BuildedData buildedData)
+    {
+        // 添加 title
+        if (buildedData.Title == "")
+        {
+            AddMetadata(MetadataType.Title,Path.GetFileName(buildedData.MdPath));
+        }
+        else
+        {
+            AddMetadata(MetadataType.Title, buildedData.Title);
+        }
+
+        // 添加作者名称
+        if (buildedData.Author == "")
+        {
+            AddMetadata(MetadataType.Author,"Epub Builder");
+        }
+        else
+        {
+            AddMetadata(MetadataType.Author, buildedData.Author);
+        }
+        
+        // 添加 Uuid
+        if (buildedData.Uuid == "")
+        {
+            // 自动生成一个 uuid 作为其序号
+            AddMetadata(MetadataType.Uuid, Guid.NewGuid().ToString());
+        }
+        else
+        {
+            AddMetadata(MetadataType.Uuid,buildedData.Uuid);
+        }
+
+        // 添加语言
+        if (buildedData.Language == "")
+        {
+            AddMetadata(MetadataType.Lang, "zh");
+        }
+        else
+        {
+            AddMetadata(MetadataType.Lang, buildedData.Language);
         }
     }
 
@@ -145,6 +198,12 @@ public class Epub
              {
                  Common.OutputText(Path.Combine(epubDir,"OEBPS",unit.FileName),unit.Content);
              }
+
+             // 复制 image 到 OEBPS/Images 文件夹
+             if (unit.Type == EpubContentType.Image)
+             {
+                 File.Copy(unit.Content,Path.Combine(epubDir,"OEBPS","Images",unit.FileName));
+             }
          }
     }
 
@@ -176,8 +235,14 @@ public class Epub
     /// </summary>
     /// <param name="pageList"></param>
     /// <returns></returns>
-    public string GenerateOpf(PageList pageList,int splitLevel)
+    public string GenerateOpf(PageList pageList, int splitLevel, BuildedData buildedData) 
     {
+        string coverManifestItem = "";
+        if (buildedData.CoverPath != "")
+        {
+            coverManifestItem = "<item href=\"Images/cover.jpg\" id=\"cover-image\" media-type=\"image/jpeg\"/>";
+        }
+
         string opf = "<?xml version=\"1.0\"  encoding=\"UTF-8\"?>\n" +
                      "<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"uuid_id\" version=\"2.0\">\n" +
                      "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
@@ -186,6 +251,7 @@ public class Epub
                      "<manifest>\n" +
                      $"{GenerateOpfManifest(pageList, splitLevel)}\n" +
                      "<item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>\n" +
+                     $"{coverManifestItem}\n" +
                      "</manifest>\n" +
                      "<spine toc = \"ncx\">\n" +
                      $"{GenerateOpfSpine(pageList, splitLevel)}\n" +
@@ -205,7 +271,7 @@ public class Epub
         if (_metadata.Uuid != "")
             metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{_metadata.Uuid}</dc:identifier>");
         else
-            metadataList.Add("<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">af96c033-08f7-4de9-96a7-eb05eff019c0</dc:identifier>");
+            metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{_metadata.Uuid}</dc:identifier>");
         
         // 语言元数据
         if (_metadata.Lang != "")

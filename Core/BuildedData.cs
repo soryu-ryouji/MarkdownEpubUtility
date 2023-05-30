@@ -5,11 +5,73 @@ using EpubBuilder.Core;
 /// </summary>
 public struct BuildedData
 {
-    public string MdPath { get; set; }
+    private string mdPath;
+    public string MdPath
+    {
+        get { return mdPath;}
+        set { mdPath = value; }
+    }
 
-    public string CoverPath { get; set; }
+    private string coverPath;
+    public string CoverPath
+    {
+        get { return coverPath;}
+        set { coverPath = value; }
+    }
 
-    public string BuildPath { get; set; }
+    private string buildPath;
+    public string BuildPath
+    {
+        get { return buildPath;}
+        set { buildPath = value; }
+    }
+    
+    private string language;
+    public string Language
+    {
+        get { return language;}
+        set { language = value; }
+    }
+
+    private string title;
+    public string Title
+    {
+        get { return title;}
+        set { title = value; }
+    }
+    
+    private string author;
+    public string Author
+    {
+        get { return author;}
+        set { author = value; }
+    }
+    
+    private string uuid;
+    public string Uuid
+    {
+        get { return uuid;}
+        set { uuid = value; }
+    }
+
+    private int splitLevel;
+    public int SplitLevel
+    {
+        get { return splitLevel; }
+        set { splitLevel = value; }
+    }
+
+    public BuildedData()
+    {
+        mdPath = "";
+        buildPath = "";
+        coverPath = "";
+        language = "zh";
+        title = "";
+        author = "";
+        uuid = "";
+        splitLevel = 1;
+    }
 
     /// <summary>
     /// 将markdown的父目录路径设置为生成路径
