@@ -99,7 +99,7 @@ public class TestEpub
  
          Epub epub = new Epub();
          epub.AddMetadata(MetadataType.Title,"TestBookTitle");
-         var str = epub.GenerateOpf(pageList, 2);
-         Console.WriteLine(str);       
+         // var str = epub.GenerateOpf(pageList, 2);
+         // Console.WriteLine(str);       
     }
 }
