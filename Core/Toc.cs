@@ -106,7 +106,7 @@ public class Toc
         // |—— SecondPage_2
 
         // 将当前页面添加进 Toc
-        TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading, pageElem.Level);
+        TocElement tocElem = new TocElement($"Text/chapter_{chapterNum}.xhtml", pageElem.Heading, pageElem.Level);
         tocElem.Level = pageElem.Level;
         AddElem(tocElem);
 
@@ -118,7 +118,7 @@ public class Toc
  
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}",
+                AddElem(new TocElement($"Text/chapter_{chapterNum}.xhtml#subChapter_{i}",
                     pageElem.ChildrenPage[i].Heading,
                     pageElem.Level+1)
                 );
