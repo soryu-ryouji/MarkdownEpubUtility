@@ -1,4 +1,7 @@
-﻿namespace EpubBuilder.Core;
+﻿using System.Text;
+using Microsoft.VisualBasic;
+
+namespace EpubBuilder.Core;
 
 public class PageElement
 {
@@ -36,5 +39,21 @@ public class PageElement
             // 如果新增页面的等级明显大于当前页面的子页面，则调用当前页面ChildrenPage最末尾元素的AddPageElem方法，自动插入到合适位置
             ChildrenPage.Last().AddPageElem(newPageElement,limitLevel);
         }
+    }
+
+    public static string RenderSelfAndAllSubPageContent(PageElement pageElem)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(ParseMd.Md2Html(String.Join("\n", pageElem.Content)));
+        
+        if (pageElem.ChildrenPage.Count != 0)
+        {
+            foreach (var unit in pageElem.ChildrenPage)
+            {
+                sb.Append(RenderSelfAndAllSubPageContent(unit));
+            }
+        }
+
+        return sb.ToString();
     }
 }
