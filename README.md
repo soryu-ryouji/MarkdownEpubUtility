@@ -28,6 +28,9 @@
 # Example in Windows
 epubbuilder.exe -m C:\Users\Ryouji\Desktop\逆流纯真年代\逆流纯真年代.md -a 人间武库 -c C:\Users\Ryouji\Desktop\逆流纯真年代\cover.jpg -s 2
 
+# Example in Linux
+epubbuilder -m /home/Ryouji/Documents/逆流纯真年代/逆流纯真年代.md -a 人间武库 -c /home/Ryouji/Documents/逆流纯真年代/cover.jpg -s 2
+
 # 简短版
 # 程序默认将 buildpath 设置为 markdown 文件的父目录，split 默认为 1，uuid 随机生成
 epubbuilder.exe -m C:\Users\Ryouji\Desktop\逆流纯真年代\逆流纯真年代.md
