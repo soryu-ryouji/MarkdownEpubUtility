@@ -1,4 +1,6 @@
-﻿# Epub Builder CLI
+﻿![Logo](./Docs/Images/logo.png)
+
+# Epub Builder CLI
 
 通过命令行创建Epub电子书
 
