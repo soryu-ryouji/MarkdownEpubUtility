@@ -111,7 +111,7 @@ public class Toc
         AddElem(tocElem);
 
         // 这里判断子元素是否需要继续递归
-        if (splitLevel == pageElem.Level)
+        if (splitLevel < pageElem.Level)
         {
             // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
             // 因此将该 pageElem 的 ChildrenPage 里所有的元素标记为 subChapter
@@ -124,7 +124,7 @@ public class Toc
                 );
             }
         }
-        else if (splitLevel > pageElem.Level)
+        else if (splitLevel >= pageElem.Level)
         {
             // 当splitLevel大于Page页面的等级的时候，说明当前Page的ChildrenPage是会生成单独xhtml文件的
             // 因此递归调用AddTocElemFromPageElem方法将其添加到Toc，直到ChildrenPage的Level与SplitLevel相等
