@@ -106,19 +106,21 @@ public class Toc
         // |—— SecondPage_2
 
         // 将当前页面添加进 Toc
-        TocElement tocElem = new TocElement($"Text/Chapter{chapterNum}", pageElem.Heading, pageElem.Level);
+        TocElement tocElem = new TocElement($"Text/chapter_{chapterNum}.xhtml", pageElem.Heading, pageElem.Level);
         tocElem.Level = pageElem.Level;
         AddElem(tocElem);
 
         // 这里判断子元素是否需要继续递归
         if (splitLevel == pageElem.Level)
         {
+            // 移除对子标题的支持
+            
             // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
             // 因此将该 pageElem 的 ChildrenPage 里所有的元素标记为 subChapter
- 
+            //
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/Chapter{chapterNum}#subChapter{i}",
+                AddElem(new TocElement($"Text/chapter_{chapterNum}.xhtml#subChapter_{i}",
                     pageElem.ChildrenPage[i].Heading,
                     pageElem.Level+1)
                 );

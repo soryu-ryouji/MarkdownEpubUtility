@@ -242,7 +242,7 @@ public class Epub
     public int GenerateOpfManifestPageItem(List<string> manifestList, PageElement pageElem,int chapterNum ,int splitLevel)
     {
         // 为当前的 pageElem 添加 item
-        manifestList.Add($"<item href=\"Texts/chapter{chapterNum}.xhtml\" id=\"chap{chapterNum}\" media-type=\"application/xhtml+xml\"/>");
+        manifestList.Add($"<item href=\"Text/chapter_{chapterNum}.xhtml\" id=\"chap_{chapterNum}\" media-type=\"application/xhtml+xml\"/>");
         chapterNum++;
         
         // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
@@ -279,7 +279,7 @@ public class Epub
     {
         
         // 为当前的 pageElem 添加 item
-        spineList.Add($"<itemref idref=\"chap{chapterNum}\"/>");
+        spineList.Add($"<itemref idref=\"chap_{chapterNum}\"/>");
         chapterNum++;
         
         // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
