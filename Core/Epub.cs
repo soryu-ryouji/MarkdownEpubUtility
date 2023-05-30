@@ -1,10 +1,11 @@
-﻿namespace EpubBuilder.Core;
+﻿using CompressionLevel = Ionic.Zlib.CompressionLevel;
+using ZipFile = Ionic.Zip.ZipFile;
+namespace EpubBuilder.Core;
 
 public class Epub
 {
     private EpubVersion _version = EpubVersion.V30;
     private Metadata _metadata = new Metadata();
-    private List<EpubContent> _epubContents = new List<EpubContent>();
 
     /// <summary>
     /// 向 epub 的 metadata 中添加数据
@@ -54,48 +55,96 @@ public class Epub
         string tocNcx = GenerateToc(pageList);
         // 使用 pageList 生成 opf 文档内容
         string opf = GenerateOpf(pageList, splitLevel);
-        _epubContents = GenerateEpubContentListFromPageList(pageList, splitLevel);
-        
+
+        List<EpubContent> epubContents = new List<EpubContent>();
+
+        // 将 pageList 内容添加进 epubContents
+        epubContents.AddRange(GenerateEpubContentListFromPageList(pageList, splitLevel));
+        // 将 toc.ncx 内容添加进 epubContents
+        epubContents.Add(new EpubContent(EpubContentType.Ncx, "toc.ncx", tocNcx));
+        // 将 mimetype 内容添加进 epubContents
+        epubContents.Add(new EpubContent(EpubContentType.Mimetype,"mimetype","application/epub+zip"));
+        // 将 container.xml 内容添加进 epubContents
+        epubContents.Add(new EpubContent(EpubContentType.Container, "container.xml", "<?xml version=\"1.0\"?>\n" +
+            "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">" +
+            "<rootfiles>\n" +
+            "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n" +
+            "</rootfiles>\n" +
+            "</container>"));
+        // 将 opf 内容添加进 epubContents
+        epubContents.Add(new EpubContent(EpubContentType.Opf,"content.opf",opf));
         
         // 创建存储文件的基础目录
         string epubDir = Path.Combine(buildedData.BuildPath, _metadata.Title);
+
+        // 导出 Epub 文件内容
+        OutputEpubContent(epubDir,epubContents);
+        
+        // 将文件目录压缩成电子书形式
+        using (var epubFile = new ZipFile(Path.Combine(buildedData.BuildPath,$"{_metadata.Title}.epub"))) {
+            epubFile.EmitTimesInWindowsFormatWhenSaving = false;
+            epubFile.CompressionLevel = CompressionLevel.None;
+            epubFile.AddDirectory(epubDir);
+            epubFile.Save();
+        }
+    }
+
+    /// <summary>
+    /// 导出 EpubContent 中的所有内容
+    /// </summary>
+    /// <param name="epubDir"></param>
+    public void OutputEpubContent(string epubDir,List<EpubContent> epubContents)
+    {
         Directory.CreateDirectory(epubDir);
         // 创建 META-INF, OEBPS, OEBPS/Text/, OEBPS/Images/, OEBPS/Styles文件夹
         Directory.CreateDirectory(Path.Combine(epubDir, "META-INF"));
         Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Text"));
         Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Images"));
         Directory.CreateDirectory(Path.Combine(epubDir, "OEBPS", "Styles"));
-        // 导出 mimetype 文件
-        Common.OutputText(Path.Combine(epubDir,"mimetype"),"application/epub+zip");
-        // 导出 container.xml文件
-        Common.OutputText(Path.Combine(epubDir, "META-INF","container.xml"), "<?xml version=\"1.0\"?>\n" +
-                                                             "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">" +
-                                                             "<rootfiles>\n" +
-                                                             "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n" +
-                                                             "</rootfiles>\n" +
-                                                             "</container>");
-        // 导出 toc.ncx文件
-        Common.OutputText(Path.Combine(epubDir,"OEBPS","toc.ncx"),tocNcx);
-        // 导出 content.opf 文件
-        Common.OutputText(Path.Combine(epubDir,"OEBPS","content.opf"),opf);
-        // 导出 epubContents 文件
-        foreach (var unit in _epubContents)
-        {
-            if (unit.Type == EpubContentType.Html)
-            {
-                string html = "<?xml version='1.0' encoding='utf-8'?>\n" +
-                              "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-                              "<head>\n" +
-                              $"<title>{_metadata.Title}</title>\n" +
-                              "</head>\n" +
-                              "<body>\n" +
-                              $"{unit.Content}" +
-                              "</body>\n" +
-                              "</html>";
-                
-                Common.OutputText(Path.Combine(epubDir,"OEBPS","Text",unit.FileName),html);
-            }
-        }
+
+         // 导出 epubContents 文件
+         foreach (var unit in epubContents)
+         {
+             // 导出所有 html 文件
+             if (unit.Type == EpubContentType.Html)
+             {
+                 string html = "<?xml version='1.0' encoding='utf-8'?>\n" +
+                               "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+                               "<head>\n" +
+                               $"<title>{_metadata.Title}</title>\n" +
+                               "</head>\n" +
+                               "<body>\n" +
+                               $"{unit.Content}" +
+                               "</body>\n" +
+                               "</html>";
+                 
+                 Common.OutputText(Path.Combine(epubDir,"OEBPS","Text",unit.FileName),html);
+             }
+ 
+             // 导出 toc.ncx文件
+             if (unit.Type == EpubContentType.Ncx)
+             {
+                 Common.OutputText(Path.Combine(epubDir,"OEBPS","toc.ncx"),unit.Content);
+             }
+ 
+             // 导出 mimetype 文件
+             if (unit.Type == EpubContentType.Mimetype)
+             {
+                 Common.OutputText(Path.Combine(epubDir,unit.FileName),unit.Content);
+             }
+ 
+             // 导出 META-INF/container.xml文件
+             if (unit.Type == EpubContentType.Container)
+             {
+                 Common.OutputText(Path.Combine(epubDir,"META-INF",unit.FileName),unit.Content);
+             }
+             
+             // 导出 content.opf 文件
+             if (unit.Type == EpubContentType.Opf)
+             {
+                 Common.OutputText(Path.Combine(epubDir,"OEBPS",unit.FileName),unit.Content);
+             }
+         }
     }
 
     /// <summary>
@@ -242,6 +291,7 @@ public class Epub
             {
                 // 当 splitLevel 等于 pageElem.Level时
                 // 将当前 pageElem 下所有子元素的 Content 添加到 pageElem 中
+                epubContents.Last().Content = PageElement.RenderSelfAndAllSubPageContent(pageElem);
             }
         }
 
