@@ -25,7 +25,7 @@ class ParseMd
     /// <param name="markdownList"></param>
     /// <param name="splitLevel"></param>
     /// <returns></returns>
-    public static PageList SplitPage(List<string> markdownList,int splitLevel=1)
+    public static PageList SplitPage(List<string> markdownList,int splitLevel)
     {
         // 首先会读取 markdownList 的第一行，从第一行中拿到第一个页面的名称和等级，创建 Page，添加到 PageList 中
         // 使用 AddPageElem 添加到 PageElem 到 PageList 中时，AddPageElem 会自动将段落排序到合适的位置
