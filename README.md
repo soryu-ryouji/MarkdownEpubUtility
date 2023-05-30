@@ -26,6 +26,7 @@ eb -m D:/markdown.md -b D:/BuildBook -c D:/cover.jpg -d
 ## Todo List
 
 - [x] 多级目录的实现
+- [ ] 添加子标签目录跳转支持
 - [ ] markdown文本渲染
 - [ ] markdown图像文件插入
 
