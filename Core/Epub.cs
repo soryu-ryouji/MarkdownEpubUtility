@@ -1,4 +1,5 @@
-﻿using CompressionLevel = Ionic.Zlib.CompressionLevel;
+﻿using System.Text;
+using CompressionLevel = Ionic.Zlib.CompressionLevel;
 using ZipFile = Ionic.Zip.ZipFile;
 namespace EpubBuilder.Core;
 
@@ -183,8 +184,12 @@ public class Epub
                      $"{GenerateOpfMetadata()}\n" +
                      "</metadata>\n" +
                      "<manifest>\n" +
-                     $"{GenerateOpfManifest(pageList,splitLevel)}\n" +
+                     $"{GenerateOpfManifest(pageList, splitLevel)}\n" +
+                     "<item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>\n" +
                      "</manifest>\n" +
+                     "<spine toc = \"ncx\">\n" +
+                     $"{GenerateOpfSpine(pageList, splitLevel)}\n" +
+                     "</spine>\n" +
                      "</package>";
         return opf;
     }
@@ -255,6 +260,45 @@ public class Epub
 
         return chapterNum;
     }
+
+    public string GenerateOpfSpine(PageList pageList, int splitLevel)
+    {
+        // 为 pageList 生成 chapter.xhtml 的标识
+        int chapterNum = 0;
+        List<string> spineList = new List<string>();
+        
+        foreach (var unit in pageList.PageElemList)
+        {
+            chapterNum = GenerateOpfSpineItem(spineList, unit, chapterNum, splitLevel);
+        }
+
+        return String.Join("\n",spineList);
+    }
+
+    public int GenerateOpfSpineItem(List<string> spineList, PageElement pageElem, int chapterNum, int splitLevel)
+    {
+        
+        // 为当前的 pageElem 添加 item
+        spineList.Add($"<itemref idref=\"chap{chapterNum}\"/>");
+        chapterNum++;
+        
+        // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
+        if (pageElem.ChildrenPage.Count != 0)
+        {
+            // 递归进子节点
+            if (splitLevel > pageElem.Level)
+            {
+                foreach (var unit in pageElem.ChildrenPage)
+                {
+                    chapterNum = GenerateOpfSpineItem(spineList, unit, chapterNum, splitLevel);
+                }
+            }
+        }
+
+        return chapterNum;
+    }
+    
+    
 
     public List<EpubContent> GenerateEpubContentListFromPageList(PageList pageList, int splitLevel)
     {
