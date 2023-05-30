@@ -60,6 +60,7 @@ public class Epub
         string tocNcx = GenerateToc(pageList);
         // 使用 pageList 生成 opf 文档内容
         string opf = GenerateOpf(pageList, buildedData.SplitLevel, buildedData);
+        string css = CssCreator.StyleSheet();
 
         List<EpubContent> epubContents = new List<EpubContent>();
 
@@ -78,6 +79,7 @@ public class Epub
             "</container>"));
         // 将 opf 内容添加进 epubContents
         epubContents.Add(new EpubContent(EpubContentType.Opf,"content.opf",opf));
+        epubContents.Add(new EpubContent(EpubContentType.Container,"stylesheet.css",css));
 
         if (buildedData.CoverPath != "")
         {
@@ -166,6 +168,7 @@ public class Epub
                                "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
                                "<head>\n" +
                                $"<title>{_metadata.Title}</title>\n" +
+                               "<link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\"/>" +
                                "</head>\n" +
                                "<body>\n" +
                                $"{unit.Content}" +
@@ -203,6 +206,12 @@ public class Epub
              if (unit.Type == EpubContentType.Image)
              {
                  File.Copy(unit.Content,Path.Combine(epubDir,"OEBPS","Images",unit.FileName));
+             }
+             
+             // 导出 css 文件到 OEBPS/Styles 文件夹
+             if (unit.Type == EpubContentType.Css)
+             {
+                 Common.OutputText(Path.Combine(epubDir,"OEBPS","Styles",unit.FileName),unit.Content);
              }
          }
     }
@@ -251,6 +260,7 @@ public class Epub
                      "<manifest>\n" +
                      $"{GenerateOpfManifest(pageList, splitLevel)}\n" +
                      "<item href=\"toc.ncx\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>\n" +
+                     "<item href=\"Styles/stylesheet.css\" id=\"stylesheet\"  media-type=\"text/css\"/>\n"+
                      $"{coverManifestItem}\n" +
                      "</manifest>\n" +
                      "<spine toc = \"ncx\">\n" +
