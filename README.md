@@ -4,7 +4,7 @@
 
 # Epub Builder CLI
 
-通过命令行创建Epub电子书
+通过命令行创建 Epub 电子书
 
 ## Command Line Parameter
 
@@ -38,9 +38,11 @@ epubbuilder.exe -m C:\Users\Ryouji\Desktop\逆流纯真年代\逆流纯真年代
 
 ## Docs
 
-[Epub电子书格式介绍](./Docs/Epub电子书格式.md)
+[Epub 电子书格式介绍](./Docs/Epub电子书格式.md)
 
-[EpubBuilder执行流程](./Docs/程序执行流程.md)
+[EpubBuilder 执行流程](./Docs/程序执行流程.md)
+
+[如何将 EpubBuilder 打包为应用程序](./Docs/如何构建EpubBuilderCLI.md)
 
 ## Todo List
 
