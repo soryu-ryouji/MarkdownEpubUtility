@@ -1,13 +1,11 @@
-using System.Net;
+namespace EpubBuilder;
 
-namespace EpubBuilder.Core;
-
-public class TocElement
+public class TocElem
 {
     private int _level;
     private string _url;
     private string _title;
-    private List<TocElement> _children;
+    private List<TocElem> _children;
 
     public int Level
     {
@@ -25,25 +23,25 @@ public class TocElement
         get { return _title; }
     }
 
-    public List<TocElement> Children
+    public List<TocElem> Children
     {
         get { return _children; }
     }
 
-    public TocElement(string url, string title)
+    public TocElem(string url, string title)
     {
         _level = 1;
         _url = url;
         _title = title;
-        _children = new List<TocElement>();
+        _children = new List<TocElem>();
     }
-    
-    public TocElement(string url, string title, int level)
+
+    public TocElem(string url, string title, int level)
     {
         _level = level;
         _url = url;
         _title = title;
-        _children = new List<TocElement>();
+        _children = new List<TocElem>();
     }
 
     /// <summary>
@@ -64,7 +62,6 @@ public class TocElement
     /// </summary>
     public void UpLevel(int level)
     {
-        Log.AddLog("TocElement {_title} up level");
         // Tips : 之所以是 level+1 ，是因为1代表一级标题，2代表二级标题
         _level = level;
         foreach (var child in _children)
@@ -79,9 +76,8 @@ public class TocElement
     /// <summary>
     /// 为当前的元素添加子元素
     /// </summary>
-    public void AddChild(TocElement tocElement)
+    public void AddChild(TocElem tocElement)
     {
-        Log.AddLog($"TocElement {_title} add child {tocElement.Title}");
         // Tips : 之所以是 level+1 ，是因为1代表一级标题，2代表二级标题
         // 若被添加元素的level小于或等于当前元素的level，则将其元素等级设为比当前元素的level大1的状态
         if (tocElement.Level <= this._level)
@@ -95,9 +91,8 @@ public class TocElement
     /// <summary>
     /// 为当前元素或者为其子元素添加元素
     /// </summary>
-    public void AddElem(TocElement tocElement)
+    public void AddElem(TocElem tocElement)
     {
-        Log.AddLog($"TocElement {_title} add element {tocElement.Title}");
         if (_children.Count == 0)
         {
             // 若当前子元素的个数为0时，直接插入到子元素中
@@ -120,7 +115,6 @@ public class TocElement
     /// </summary>
     public (int, string) RenderToc(int offset)
     {
-        Log.AddLog($"TocElement {_title} render toc");
         offset += 1;
         int id = offset;
         string childrenToc;
@@ -130,7 +124,7 @@ public class TocElement
         }
         else
         {
-            List<string> childTocList = new List<string>();
+            var childTocList = new List<string>();
             foreach (var child in _children)
             {
                 (int, string) childTuple = child.RenderToc(offset);
@@ -138,10 +132,10 @@ public class TocElement
                 childTocList.Add(childTuple.Item2);
             }
 
-            childrenToc = String.Join("", childTocList);
+            childrenToc = string.Join("", childTocList);
         }
 
-        string output = String.Format(
+        string output = string.Format(
             "<navPoint id=\"navPoint-{0}\">\n" +
             "<navLabel>" +
             "<text>{1}</text>" +
@@ -157,4 +151,3 @@ public class TocElement
         return (offset, output);
     }
 }
-

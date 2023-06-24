@@ -1,7 +1,6 @@
 using Markdig;
 
-namespace EpubBuilder.Core;
-
+namespace EpubBuilder;
 
 class ParseMd
 {
@@ -17,6 +16,14 @@ class ParseMd
         return Markdown.ToHtml(markdown, pipeline);
     }
 
+    public static string Md2Html(List<string> markdown)
+    {
+        var md = string.Join("\n", markdown);
+        var pipeline = new MarkdownPipelineBuilder().UseEmphasisExtras().UsePipeTables().Build();
+
+        return Markdown.ToHtml(md, pipeline);
+    }
+
     /// <summary>
     /// 根据 split level 将 markdown 文档拆分成一个或多个特定页面
     /// 默认用户会遵守规范，在文章的最开头会以#作为开始符
@@ -25,24 +32,23 @@ class ParseMd
     /// <param name="markdownList"></param>
     /// <param name="splitLevel"></param>
     /// <returns></returns>
-    public static PageList SplitPage(List<string> markdownList,int splitLevel)
+    public static PageList SplitPage(List<string> markdownList, int splitLevel)
     {
         // 首先会读取 markdownList 的第一行，从第一行中拿到第一个页面的名称和等级，创建 Page，添加到 PageList 中
         // 使用 AddPageElem 添加到 PageElem 到 PageList 中时，AddPageElem 会自动将段落排序到合适的位置
         // 当到达 split level 的等级时，所有的大于 split level 的页面，都会被添加其父 Page 的 ChildrenPage 列表中
-        
-        PageList pageList = new PageList();
-        
+
+        var pageList = new PageList();
+
         // 第一行必须是标题，如果不是，则直接报错退出
         if (GetHeadingLevel(markdownList[0]) == 0)
         {
-            Log.AddLog("The markdown first line is not a Heading",LogType.Error);
             Environment.Exit(10);
         }
-        
-        PageElement newPage = new PageElement(GetHeadingLevel(markdownList.First()),GetHeadingText(markdownList.First()));
-        PageElement curPage = newPage;
-        pageList.AddPageElem(newPage,splitLevel);
+
+        var newPage = new PageElem(GetHeadingLevel(markdownList.First()), GetHeadingText(markdownList.First()));
+        var curPage = newPage;
+        pageList.AddPageElem(newPage, splitLevel);
         curPage.Content.Add(markdownList.First());
         // 因为提前获取了markdown的第一行，因此将第一行移除，避免之后重复创建
         markdownList.RemoveAt(0);
@@ -51,16 +57,16 @@ class ParseMd
         {
             // 当line为空时，直接跳过
             if (line.Trim() == "") continue;
-            
+
             // 当line的level不等于0时，创建新的 Page
             int level = GetHeadingLevel(line);
             if (level != 0)
             {
-                PageElement page = new PageElement(level, GetHeadingText(line));
+                var page = new PageElem(level, GetHeadingText(line));
                 curPage = page;
-                pageList.AddPageElem(page,splitLevel);
+                pageList.AddPageElem(page, splitLevel);
             }
-            
+
             curPage.Content.Add("");
             curPage.Content.Add(line);
         }
@@ -86,7 +92,7 @@ class ParseMd
         // markdown 的 「#」 标签最多支持到 h6
         // 因此如果 「#」 数量超过6，则将标题等级其归零
         if (level > 6) level = 0;
-        
+
         return level;
     }
 
