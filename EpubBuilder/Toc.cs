@@ -1,4 +1,4 @@
-﻿namespace EpubBuilder.Core;
+﻿namespace EpubBuilder;
 
 /// <summary>
 /// Table of Contents
@@ -6,9 +6,9 @@
 /// </summary>
 public class Toc
 {
-    List<TocElement> _tocElemList = new List<TocElement>();
+    List<TocElem> _tocElemList = new();
 
-    public List<TocElement> TocElemList
+    public List<TocElem> TocElemList
     {
         get { return _tocElemList; }
     }
@@ -18,12 +18,7 @@ public class Toc
     /// </summary>
     public bool ChildrenIsEmpty()
     {
-        if (_tocElemList.Count == 0)
-        {
-            return true;
-        }
-
-        return false;
+        return _tocElemList.Count == 0;
     }
 
     /// <summary>
@@ -31,7 +26,7 @@ public class Toc
     /// 如果该元素比最后的元素的Level小，则将其与最后的元素的子元素的Level进行比较。
     /// 如果等级相同，或者是大于末尾的元素，则将其放在该元素的后面
     /// </summary>
-    public void AddElem(TocElement tocElement)
+    public void AddElem(TocElem tocElement)
     {
         if (_tocElemList.Count == 0)
         {
@@ -51,11 +46,11 @@ public class Toc
     }
 
     /// <summary>
-    /// 渲染Toc元素当前的目录
+    /// 渲染 Toc 元素当前的目录
     /// </summary>
     public string RenderToc()
     {
-        List<string> output = new List<string>();
+        var output = new List<string>();
         int offset = 0;
         foreach (var elem in _tocElemList)
         {
@@ -64,11 +59,11 @@ public class Toc
             output.Add(tocTruple.Item2);
         }
 
-        return String.Join("", output);
+        return string.Join("", output);
     }
 
     /// <summary>
-    /// 从PageList中生成Toc
+    /// 使用 PageList 生成 Toc
     /// </summary>
     /// <param name="pageList"></param>
     /// <param name="splitLevel"></param>
@@ -90,7 +85,7 @@ public class Toc
     /// <param name="chapterNum"></param>
     /// <param name="splitLevel"></param>
     /// <returns></returns>
-    public int AddTocElemFromPageElem(PageElement pageElem, int chapterNum, int splitLevel)
+    public int AddTocElemFromPageElem(PageElem pageElem, int chapterNum, int splitLevel)
     {
         // 在实例化Toc类后，该方法会根据 PageElem 的 Level 和 splitLevel 自动向 Toc 中添加 TocElem
         // Example:
@@ -106,8 +101,7 @@ public class Toc
         // |—— SecondPage_2
 
         // 将当前页面添加进 Toc
-        TocElement tocElem = new TocElement($"Text/chapter_{chapterNum}.xhtml", pageElem.Heading, pageElem.Level);
-        tocElem.Level = pageElem.Level;
+        var tocElem = new TocElem($"Text/chapter_{chapterNum}.xhtml", pageElem.Heading, pageElem.Level);
         AddElem(tocElem);
 
         // 这里判断子元素是否需要继续递归
@@ -115,12 +109,12 @@ public class Toc
         {
             // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
             // 因此将该 pageElem 的 ChildrenPage 里所有的元素标记为 subChapter
- 
+
             for (int i = 0; i < pageElem.ChildrenPage.Count; i++)
             {
-                AddElem(new TocElement($"Text/chapter_{chapterNum}.xhtml#subChapter_{i}",
+                AddElem(new TocElem($"Text/chapter_{chapterNum}.xhtml#subChapter_{i}",
                     pageElem.ChildrenPage[i].Heading,
-                    pageElem.Level+1)
+                    pageElem.Level + 1)
                 );
             }
         }
@@ -147,11 +141,11 @@ public class Toc
         }
     }
 
-    public static void PrintTocStruct(TocElement tocElem)
+    public static void PrintTocStruct(TocElem tocElem)
     {
         string space = "——";
-        Console.WriteLine(RepeatString(space,tocElem.Level-1) + tocElem.Title);
-        
+        Console.WriteLine(RepeatString(space, tocElem.Level - 1) + tocElem.Title);
+
         if (tocElem.Children.Count != 0)
         {
             foreach (var subToc in tocElem.Children)
@@ -160,15 +154,12 @@ public class Toc
             }
         }
     }
-    
-    public static string RepeatString(string str, int times)
+
+    private static string RepeatString(string str, int times)
     {
-        if (times == 0)
-        {
-            return "";
-        }
-        
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+        if (times == 0) return "";
+
+        var sb = new System.Text.StringBuilder();
         for (int i = 0; i < times; i++)
         {
             sb.Append(str);

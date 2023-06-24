@@ -1,10 +1,10 @@
-﻿namespace EpubBuilder.Core;
+﻿namespace EpubBuilder;
 
 public class PageList
 {
-    public List<PageElement> PageElemList = new List<PageElement>();
+    public List<PageElem> PageElemList = new();
 
-    public void AddPageElem(PageElement pageElement, int limitLevel)
+    public void AddPageElem(PageElem pageElement, int limitLevel)
     {
         if (PageElemList.Count == 0)
         {
@@ -35,14 +35,14 @@ public class PageList
         }
     }
 
-    public static void PrintPageChildrenStruct(PageElement pageElement)
+    public static void PrintPageChildrenStruct(PageElem pageElement)
     {
         string space = "——";
-        Console.WriteLine(RepeatString(space,pageElement.Level-1) + pageElement.Heading);
+        Console.WriteLine(RepeatString(space, pageElement.Level - 1) + pageElement.Heading);
 
         if (pageElement.ChildrenPage.Count != 0)
         {
-            foreach(var subPage in pageElement.ChildrenPage)
+            foreach (var subPage in pageElement.ChildrenPage)
             {
                 PrintPageChildrenStruct(subPage);
             }
@@ -55,8 +55,8 @@ public class PageList
         {
             return "";
         }
-        
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        var sb = new System.Text.StringBuilder();
         for (int i = 0; i < times; i++)
         {
             sb.Append(str);
