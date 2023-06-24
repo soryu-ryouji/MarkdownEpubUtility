@@ -25,16 +25,13 @@ zip.Save(@"D:\太原之恋.epub");
 
 [Epub 电子书格式介绍](./Docs/Epub电子书格式.md)
 
-[EpubBuilder 执行流程](./Docs/程序执行流程.md)
-
-[如何将 EpubBuilder 打包为应用程序](./Docs/如何构建EpubBuilderCLI.md)
-
 ## Todo List
 
 - [x] 多级目录的实现
-- [x] 添加子标签目录跳转支持
 - [x] markdown文本渲染
-- [x] markdown图像文件插入
+- [x] markdown图像插入
+- [ ] 大文件生成时的中文乱码
+- [ ] 修复子标签目录错误跳转
 
 
 ## LICENSE
