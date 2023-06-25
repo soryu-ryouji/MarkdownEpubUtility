@@ -124,8 +124,6 @@ public class Epub
     /// <summary>
     /// 根据 pageList 来生成 toc 文件内容
     /// </summary>
-    /// <param name="pageList"></param>
-    /// <returns></returns>
     public string GenerateToc(PageList pageList)
     {
         var toc = new Toc();
@@ -145,10 +143,8 @@ public class Epub
     }
 
     /// <summary>
-    /// 根据 pageList 生成 opf 文件内容
+    /// 根据 epubContentList 生成 opf 文件内容
     /// </summary>
-    /// <param name="pageList"></param>
-    /// <returns></returns>
     public string GenerateOpf(EpubContentList epubContentList)
     {
         string opf = "<?xml version=\"1.0\"  encoding=\"UTF-8\"?>\n" +
@@ -167,11 +163,8 @@ public class Epub
     }
 
     /// <summary>
-    /// 根据 PageList 和 SplitLevel 生成 manifest
+    /// 根据 epubContentList 生成 manifest
     /// </summary>
-    /// <param name="pageList"></param>
-    /// <param name="splitLevel"></param>
-    /// <returns></returns>
     public string GenerateOpfManifest(EpubContentList epubContentList)
     {
         var sb = new StringBuilder();
@@ -233,8 +226,8 @@ public class Epub
 
     public string GetAbsolutePath(string filePath, string relativeImagePath)
     {
-        // 获取文件所在目录的绝对路径
-        string fileDirectory = Path.GetDirectoryName(filePath);
+        // 获取文件所在目录的绝对路径，若无法获取到，则抛出异常
+        string fileDirectory = Path.GetDirectoryName(filePath) ?? throw new Exception();
 
         // 解析相对路径得到绝对路径
         string absoluteImagePath = Path.GetFullPath(Path.Combine(fileDirectory, relativeImagePath));

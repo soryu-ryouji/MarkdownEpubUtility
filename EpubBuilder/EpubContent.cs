@@ -19,7 +19,7 @@ public enum EpubContentType
 /// </summary>
 public class EpubContent
 {
-    public EpubContentType Type;
+    public readonly EpubContentType Type;
     public string FileName;
     public string Content;
 
@@ -67,7 +67,7 @@ public class EpubContentList
     public List<EpubContent> Contents = new();
 
     /// <summary>
-    /// 根据 PageList 和 SplitLevel 提取出 EpubContnet
+    /// 根据 PageList 和 SplitLevel 提取出 EpubContent
     /// </summary>
     /// <param name="pageList"></param>
     /// <param name="splitLevel"></param>

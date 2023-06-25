@@ -5,7 +5,7 @@ public class TocElem
     private int _level;
     private string _url;
     private string _title;
-    private List<TocElem> _children;
+    public List<TocElem> Children;
 
     public int Level
     {
@@ -23,17 +23,12 @@ public class TocElem
         get { return _title; }
     }
 
-    public List<TocElem> Children
-    {
-        get { return _children; }
-    }
-
     public TocElem(string url, string title)
     {
         _level = 1;
         _url = url;
         _title = title;
-        _children = new List<TocElem>();
+        Children = new();
     }
 
     public TocElem(string url, string title, int level)
@@ -41,7 +36,7 @@ public class TocElem
         _level = level;
         _url = url;
         _title = title;
-        _children = new List<TocElem>();
+        Children = new();
     }
 
     /// <summary>
@@ -49,7 +44,7 @@ public class TocElem
     /// </summary>
     public bool ChildrenIsEmpty()
     {
-        if (_children.Count == 0 || _children == null)
+        if (Children.Count == 0)
         {
             return true;
         }
@@ -64,7 +59,7 @@ public class TocElem
     {
         // Tips : 之所以是 level+1 ，是因为1代表一级标题，2代表二级标题
         _level = level;
-        foreach (var child in _children)
+        foreach (var child in Children)
         {
             if (child.Level <= this._level)
             {
@@ -85,7 +80,7 @@ public class TocElem
             tocElement.UpLevel(this._level + 1);
         }
 
-        _children.Add(tocElement);
+        Children.Add(tocElement);
     }
 
     /// <summary>
@@ -93,20 +88,20 @@ public class TocElem
     /// </summary>
     public void AddElem(TocElem tocElement)
     {
-        if (_children.Count == 0)
+        if (Children.Count == 0)
         {
             // 若当前子元素的个数为0时，直接插入到子元素中
-            _children.Add(tocElement);
+            Children.Add(tocElement);
         }
-        else if (tocElement.Level <= _children.Last().Level)
+        else if (tocElement.Level <= Children.Last().Level)
         {
             // 若当前元素的等级小于或者等于当前元素的子元素，则将其作为自己的子元素插入
-            _children.Add(tocElement);
+            Children.Add(tocElement);
         }
-        else if (tocElement.Level > _children.Last().Level)
+        else if (tocElement.Level > Children.Last().Level)
         {
             // 若当前元素的 Level 大于 当前元素最后一个子元素的 Level，则让其再与子元素的最后一个子元素进行比较，直到将其插入到合适位置
-            _children.Last().AddElem(tocElement);
+            Children.Last().AddElem(tocElement);
         }
     }
 
@@ -125,7 +120,7 @@ public class TocElem
         else
         {
             var childTocList = new List<string>();
-            foreach (var child in _children)
+            foreach (var child in Children)
             {
                 (int, string) childTuple = child.RenderToc(offset);
                 offset = childTuple.Item1;
