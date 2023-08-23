@@ -19,10 +19,10 @@ public class EpubMetadata
     public string Generator;
 
     // 电子书描述
-    public List<string> Description;
+    public string Description;
 
     // 电子书主题
-    public List<string> Subject;
+    public string Subject;
 
     // 电子书许可证
     public string License;
@@ -41,9 +41,9 @@ public class EpubMetadata
         Title = "";
         Author = "";
         Language = "";
-        Generator = "Csharp Epub Builder library";
-        Description = new List<string>();
-        Subject = new List<string>();
+        Generator = "";
+        Description = "";
+        Subject = "";
         License = "";
         PublishedDate = "";
         ModifiedDate = "";
@@ -53,24 +53,29 @@ public class EpubMetadata
     public string GenerateOpfMetadata()
     {
         var metadataList = new List<string>();
-        // 标题元数据
-        if (Title != "") metadataList.Add($"<dc:title>{Title}</dc:title>");
-        else metadataList.Add("<dc:title>EpubBuilder</dc:title>");
 
-        // UUID元数据
-        if (Uuid != "")
-            metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{Uuid}</dc:identifier>");
-        else
-            metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{GenerateUuid()}</dc:identifier>");
+        // Title Metadata
+        metadataList.Add(Title != "" ? $"<dc:title>{Title}</dc:title>" : "<dc:title>EpubBuilder</dc:title>");
+        // Author Metadata
+        metadataList.Add(Author != "" ? $"<dc:creator>{Author}</dc:creator>" : "<dc:creator>Anonymous</dc:creator>");
+        // Language Metadata
+        metadataList.Add(Language != "" ? $"<dc:language>{Language}</dc:language>" : "<dc:language>zh</dc:language>");
+        // Generator Metadata
+        metadataList.Add(Generator != "" ? $"<dc:publisher>{Generator}</dc:publisher>" : "<dc:publisher>EpubBuilder</dc:publisher>");
 
-        // 语言元数据
-        if (Language != "")
-            metadataList.Add($"<dc:language>{Language}</dc:language>");
-        else metadataList.Add("<dc:language>zh</dc:language>");
-
-        // 主题或关键字
-        if (Subject.Count != 0)
-            metadataList.Add($"<dc:subject>{String.Join(",", Subject)}</dc:subject>");
+        // Description Metadata
+        if (Description != "") metadataList.Add($"<dc:description>{Description}</dc:description>");
+        // License Metadata
+        if (License != "") metadataList.Add($"<dc:rights>{License}</dc:rights>");
+        // PublishedDate Metadata
+        if (PublishedDate != "") metadataList.Add($"<dc:date>{PublishedDate}</dc:date>");
+        // ModifiedDate Metadata
+        if (ModifiedDate != "") metadataList.Add($"<dc:date>{ModifiedDate}</dc:date>");
+        // Subject Metadata
+        if (Subject != "") metadataList.Add($"<dc:subject>{Subject}</dc:subject>");
+        // UUID Metadata
+        if (Uuid != "") metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{Uuid}</dc:identifier>");
+        else metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{GenerateUuid()}</dc:identifier>");
 
         return string.Join("\n", metadataList);
     }
