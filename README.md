@@ -2,7 +2,11 @@
 
 # Epub Builder Library
 
-> 当前版本处理多级目录有问题，Bug 尚未修复
+**CLI Example**
+
+```shell
+eb -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之炽.epub -s 2
+```
 
 **Example**
 
