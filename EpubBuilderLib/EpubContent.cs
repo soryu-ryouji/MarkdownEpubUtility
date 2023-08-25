@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace EpubBuilder;
 
 /// <summary>
@@ -5,7 +7,8 @@ namespace EpubBuilder;
 /// </summary>
 public enum EpubContentType
 {
-    Image,
+    Jpg,
+    Png,
     Html,
     Ncx,
     Mimetype,
@@ -35,7 +38,7 @@ public class EpubContent
         string item = Type switch
         {
             EpubContentType.Html =>  $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
-            EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
+            EpubContentType.Jpg => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
             EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
             EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
             _ => ""
@@ -78,6 +81,18 @@ public class EpubContentList
         {
             chapterNum = ExtractSubPage(subPage, chapterNum, splitLevel);
         }
+    }
+
+    public void AddImage(string fileName, string imagePath)
+    {
+        var fileExtension = Path.GetExtension(imagePath);
+        
+        Contents.Add(new EpubContent(fileExtension switch
+        {
+            ".jpg" => EpubContentType.Jpg,
+            ".png" => EpubContentType.Png,
+            _ => throw new DataException("Only jpg and png images can be used")
+        }, fileName + $"{fileExtension}" , imagePath));
     }
 
     private int ExtractSubPage(PageElem pageElem, int chapterNum, int splitLevel)
