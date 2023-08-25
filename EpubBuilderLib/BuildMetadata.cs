@@ -12,6 +12,7 @@ public class BuildMetadata
     {
         CoverPath = coverPath;
         MdPath = mdPath;
-        PageSplitLevel = pageSplitLevel;
+
+        PageSplitLevel = pageSplitLevel <= 0 ? 1 : pageSplitLevel;
     }
 }

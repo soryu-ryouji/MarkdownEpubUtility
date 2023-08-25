@@ -74,14 +74,13 @@ public class EpubMetadata
         // Subject Metadata
         if (Subject != "") metadataList.Add($"<dc:subject>{Subject}</dc:subject>");
         // UUID Metadata
-        if (Uuid != "") metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{Uuid}</dc:identifier>");
-        else metadataList.Add($"<dc:identifier id=\"uuid_id\" opf:scheme=\"uuid\">{GenerateUuid()}</dc:identifier>");
+        if (Uuid != "") metadataList.Add($"""<dc:identifier id="uuid_id" opf:scheme="uuid">{Uuid}</dc:identifier>""");
 
         return string.Join("\n", metadataList);
     }
 
-    private string GenerateUuid()
-    {
-        return Guid.NewGuid().ToString();
-    }
+    // private string GenerateUuid()
+    // {
+    //     return Guid.NewGuid().ToString();
+    // }
 }

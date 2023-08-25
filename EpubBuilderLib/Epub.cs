@@ -33,13 +33,12 @@ public class Epub
 
         var pageList = ParseMd.ToHtmlPages(mdLines, _buildMetadata.PageSplitLevel);
         ContentList.ExtractPages(pageList, _buildMetadata.PageSplitLevel);
-
-        var tocNcx = GenerateToc(pageList);
-        var opf = GenerateOpf(ContentList);
-
+        
+        // 若有封面，则将封面添加进 epubContents
+        if (_buildMetadata.CoverPath != "") ContentList.AddImage( "cover", _buildMetadata.CoverPath);
 
         // 将 toc.ncx 内容添加进 epubContents
-        ContentList.Contents.Add(new EpubContent(EpubContentType.Ncx, "toc.ncx", tocNcx));
+        ContentList.Contents.Add(new EpubContent(EpubContentType.Ncx, "toc.ncx", GenerateToc(pageList)));
         // 将 mimetype 内容添加进 epubContents
         ContentList.Contents.Add(new EpubContent(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
         // 将 container.xml 内容添加进 epubContents
@@ -53,16 +52,10 @@ public class Epub
             </container>
             """));
 
+        ContentList.Contents.Add(new EpubContent(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
+        
         // 将 opf 内容添加进 epubContents
-        ContentList.Contents.Add(new EpubContent(EpubContentType.Opf, "content.opf", opf));
-        ContentList.Contents.Add(
-            new EpubContent(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
-
-        // 若有封面，则将封面添加进 epubContents
-        if (_buildMetadata.CoverPath != "")
-        {
-            ContentList.Contents.Add(new EpubContent(EpubContentType.Image, "cover.jpg", _buildMetadata.CoverPath));
-        }
+        ContentList.Contents.Add(new EpubContent(EpubContentType.Opf, "content.opf", GenerateOpf(ContentList, coverExist:_buildMetadata.CoverPath != "")));
 
         // 创建电子书压缩包
         var zip = new ZipFile(Encoding.UTF8);
@@ -100,9 +93,9 @@ public class Epub
             {
                 zip.AddEntry($"OEBPS/Styles/{content.FileName}", content.Content);
             }
-            else if (content.Type == EpubContentType.Image)
+            else if (content.Type == EpubContentType.Jpg)
             {
-                zip.AddEntry($"OEBPS/Image/{content.FileName}.jpg", File.ReadAllBytes(content.Content));
+                zip.AddEntry($"OEBPS/Image/{content.FileName}", File.ReadAllBytes(content.Content));
             }
             else if (content.Type == EpubContentType.Container)
             {
@@ -138,12 +131,15 @@ public class Epub
         string tocNcx =
             $"""
              <?xml version = "1.0" encoding = "utf-8"?>
-             <ncx xmlns = "https://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
-                 <docTitle><text>{_epubMetadata.Title}</text></docTitle>
-                 <docAuthor><text>{_epubMetadata.Author}</text></docAuthor>
-                 <navMap>
-                 {toc.RenderToc()}
-                 </navMap>
+             <ncx xmlns = "http://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
+             <head>
+                <meta content="3" name="dtb:depth" />
+             </head>
+             <docTitle><text>{_epubMetadata.Title}</text></docTitle>
+             <docAuthor><text>{_epubMetadata.Author}</text></docAuthor>
+             <navMap>
+             {toc.RenderToc()}
+             </navMap>
              </ncx>
              """;
 
@@ -153,14 +149,16 @@ public class Epub
     /// <summary>
     /// 根据 epubContentList 生成 opf 文件内容
     /// </summary>
-    public string GenerateOpf(EpubContentList epubContentList)
+    public string GenerateOpf(EpubContentList epubContentList, bool coverExist = false)
     {
-        string opf =
+        var coverMetadata = coverExist ? """<meta name="cover" content="cover.jpg"/>""" : "";
+        var opf =
             $"""
              <?xml version = "1.0"  encoding = "UTF-8"?>
              <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
              <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
              {_epubMetadata.GenerateOpfMetadata()}
+             {coverMetadata}
              </metadata>
              <manifest>
              {GenerateOpfManifest(epubContentList)}
@@ -222,15 +220,16 @@ public class Epub
                 // 将资源添加到 EpubContentList 中
                 Match match = regex.Match(mdLines[i]);
 
-                string fileName = $"image_{numCount}";
                 string absoluteImagePath = GetAbsolutePath(mdFilePath, match.Groups[2].Value);
-
+                string fileExtension = Path.GetExtension(match.Groups[2].Value);
+                string fileName = $"image_{numCount}";
+                
                 // 将图片添加到 EpubContentList 中
-                ContentList.Contents.Add(new EpubContent(EpubContentType.Image, fileName, absoluteImagePath));
-
-                numCount++;
+                ContentList.AddImage(fileName, absoluteImagePath);
                 // 将图片语法替换为md语法
-                mdLines[i] = $"<img alt=\"{fileName}\" src=\"../Image/{fileName}.jpg\"/>";
+                mdLines[i] = $"""<img alt = "{fileName}" src = "../Image/{fileName}{fileExtension}"/>""";
+                
+                numCount++;
             }
         }
     }

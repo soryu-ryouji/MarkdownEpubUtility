@@ -8,9 +8,9 @@ class Program
     public static void Main(string[] args)
     {
         var unit = ParseCLI.ParseCommandLineArgs(args);
-        var epubMetadata = unit.Item1;
-        var buildMetadata = unit.Item2;
-        var buildPath = unit.Item3;
+        var epubMetadata = unit.epubMetadata;
+        var buildMetadata = unit.buildMetadata;
+        var buildPath = unit.buildPath;
 
         var epub = new Epub(epubMetadata, buildMetadata);
         var zip = epub.Generate();
@@ -57,7 +57,7 @@ class ParseCLI
     /// <summary>
     /// 解析命令行参数
     /// </summary>
-    public static (EpubMetadata, BuildMetadata, string) ParseCommandLineArgs(string[] args)
+    public static (EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath) ParseCommandLineArgs(string[] args)
     {
         string title = "";
         string author = "";
@@ -72,23 +72,22 @@ class ParseCLI
         Parser.Default.ParseArguments<Options>(args).WithParsed<Options>(options => {
                 mdpath = options.MdPath ?? throw new Exception("Markdown Path is null");
                 coverPath = options.CoverPath ?? "";
-                buildPath = options.BuildPath ?? "";
+                buildPath = options.BuildPath ?? Path.Combine(Path.GetDirectoryName(mdpath)!, $"{Path.GetFileNameWithoutExtension(mdpath)}.epub");
                 splitLevel = options.SplitLevel;
 
-                title = options.Title ?? "EpubBuilder";
-                author = options.Author ?? "";
+                title = options.Title ?? Path.GetFileNameWithoutExtension(mdpath);
+                author = options.Author ?? "EpubBuilder";
                 language = options.Language ?? "zh";
                 uuid = options.Uuid ?? "";
             });
 
         var epubMetadata = new EpubMetadata{
-            Title = title ?? "EpubBuilder",
+            Title = title,
             Author = author,
             Language = language,
             Uuid = uuid
             };
-        var buildMetadata = new BuildMetadata(mdpath,coverPath,splitLevel);
-
+        var buildMetadata = new BuildMetadata(mdpath, coverPath, splitLevel);
         
         return (epubMetadata, buildMetadata ,buildPath);
     }
