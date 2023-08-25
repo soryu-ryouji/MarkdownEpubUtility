@@ -44,12 +44,14 @@ public class Epub
         ContentList.Contents.Add(new EpubContent(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
         // 将 container.xml 内容添加进 epubContents
         ContentList.Contents.Add(new EpubContent(EpubContentType.Container, "container.xml",
-            "<?xml version=\"1.0\"?>\n" +
-            "<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">" +
-            "<rootfiles>\n" +
-            "<rootfile full-path=\"OEBPS/content.opf\" media-type=\"application/oebps-package+xml\"/>\n" +
-            "</rootfiles>\n" +
-            "</container>"));
+            """
+            <?xml version="1.0"?>
+            <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+                <rootfiles>
+                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
+                </rootfiles>
+            </container>
+            """));
 
         // 将 opf 内容添加进 epubContents
         ContentList.Contents.Add(new EpubContent(EpubContentType.Opf, "content.opf", opf));
@@ -79,16 +81,19 @@ public class Epub
         {
             if (content.Type == EpubContentType.Html)
             {
-                string html = "<?xml version='1.0' encoding='utf-8'?>\n" +
-                              "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-                              "<head>\n" +
-                              $"<title>{_epubMetadata.Title}</title>\n" +
-                              "<link href=\"../Styles/stylesheet.css\" rel=\"stylesheet\" type=\"text/css\"/>" +
-                              "</head>\n" +
-                              "<body>\n" +
-                              $"{content.Content}" +
-                              "</body>\n" +
-                              "</html>";
+                string html =
+                    $"""
+                     <?xml version='1.0' encoding='utf-8'?>
+                     <html xmlns="https://www.w3.org/1999/xhtml">
+                         <head>
+                             <title>{_epubMetadata.Title}</title>
+                             <link href="../Styles/stylesheet.css" rel="stylesheet" type="text/css"/>
+                         </head>
+                         <body>
+                             {content.Content}
+                         </body>
+                     </html>
+                     """;
                 zip.AddEntry($"OEBPS/Text/{content.FileName}", html);
             }
             else if (content.Type == EpubContentType.Css)
@@ -130,14 +135,17 @@ public class Epub
         toc.GenerateTocFromPageList(pageList, _buildMetadata.PageSplitLevel);
 
         // 生成 toc.ncx 内容
-        string tocNcx = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-                        "<ncx xmlns=\"http://www.daisy.org/z3986/2005/ncx/\" version=\"2005-1\">\n" +
-                        $"\t<docTitle><text>{_epubMetadata.Title}</text></docTitle>\n" +
-                        $"\t<docAuthor><text>{_epubMetadata.Author}</text></docAuthor>\n" +
-                        "<navMap>\n" +
-                        $"{toc.RenderToc()}\n" +
-                        "</navMap>\n" +
-                        "</ncx>";
+        string tocNcx =
+            $"""
+             <?xml version = "1.0" encoding = "utf-8"?>
+             <ncx xmlns = "https://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
+                 <docTitle><text>{_epubMetadata.Title}</text></docTitle>
+                 <docAuthor><text>{_epubMetadata.Author}</text></docAuthor>
+                 <navMap>
+                 {toc.RenderToc()}
+                 </navMap>
+             </ncx>
+             """;
 
         return tocNcx;
     }
@@ -147,18 +155,21 @@ public class Epub
     /// </summary>
     public string GenerateOpf(EpubContentList epubContentList)
     {
-        string opf = "<?xml version=\"1.0\"  encoding=\"UTF-8\"?>\n" +
-                     "<package xmlns=\"http://www.idpf.org/2007/opf\" unique-identifier=\"uuid_id\" version=\"2.0\">\n" +
-                     "<metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n" +
-                     $"{_epubMetadata.GenerateOpfMetadata()}\n" +
-                     "</metadata>\n" +
-                     "<manifest>\n" +
-                     $"{GenerateOpfManifest(epubContentList)}" +
-                     "</manifest>\n" +
-                     "<spine toc=\"ncx\">\n" +
-                     $"{GenerateOpfSpine(epubContentList)}\n" +
-                     "</spine>\n" +
-                     "</package>";
+        string opf =
+            $"""
+             <?xml version = "1.0"  encoding = "UTF-8"?>
+             <package xmlns = "https://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
+                 <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
+                 {_epubMetadata.GenerateOpfMetadata()}
+                 </metadata>
+                 <manifest>
+                 {GenerateOpfManifest(epubContentList)}
+                 </manifest>
+                 <spine toc = "ncx">
+                 {GenerateOpfSpine(epubContentList)}
+                 </spine>
+             </package>
+             """;
         return opf;
     }
 
