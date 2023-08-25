@@ -35,10 +35,10 @@ public class CssCreator
 
             h3 {
                 font-family: Source Han Sans SC;
-                font-size: 1.1em;
+                font-size: 1.2em;
                 text-align: left;
                 font-weight: normal;
-                line-height: 1.2;
+                line-height: 1.4;
                 color: #000000;
             }
 
