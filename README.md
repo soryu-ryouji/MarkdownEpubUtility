@@ -2,6 +2,8 @@
 
 # Epub Builder Library
 
+> 当前版本处理多级目录有问题，Bug 尚未修复
+
 **Example**
 
 ```c#
@@ -24,14 +26,6 @@ zip.Save(@"D:\太原之恋.epub");
 ## Docs
 
 [Epub 电子书格式介绍](./Docs/Epub电子书格式.md)
-
-## Todo List
-
-- [x] 多级目录的实现
-- [x] markdown文本渲染
-- [x] markdown图像插入
-- [ ] 大文件生成时的中文乱码
-- [ ] 修复子标签目录错误跳转
 
 
 ## LICENSE
