@@ -48,52 +48,37 @@ public class Toc
     /// <summary>
     /// 使用 PageList 生成 Toc
     /// </summary>
-    public void GenerateTocFromPageList(PageList pageList, int splitLevel)
+    public void GenerateTocFromPageList(HtmlPages htmlPages, int splitLevel)
     {
-        // 遍历 pageList.PageElemList 中的元素生成Toc
-        // PageElemList 的子元素 AddTocElemFromPageElem 会自动递归添加到Toc中
-        var offset = 0;
-        foreach (var pageElem in pageList.ElemList)
+        foreach (var pageElem in htmlPages.ElemList)
         {
-            offset = AddElemFromPageElem(pageElem, offset, splitLevel);
+            AddElemFromPageElem(pageElem, splitLevel);
         }
     }
 
     /// <summary>
     /// 使用 PageElem 向 Toc 中添加 TocElem
     /// </summary>
-    private int AddElemFromPageElem(PageElem pageElem, int offset, int splitLevel)
+    private void AddElemFromPageElem(PageElem pageElem, int splitLevel)
     {
-        // 将当前页面添加进 Toc
-        var tocElem = new TocElem($"Text/chapter_{offset}.xhtml", pageElem.Heading, pageElem.Level);
+        var tocElem = new TocElem(pageElem.Url, pageElem.Heading, pageElem.Level);
         AddElem(tocElem);
-
+        
         // 这里判断子元素是否需要继续递归
-        if (splitLevel < pageElem.Level)
+        if (pageElem.Level > splitLevel)
         {
-            // 当 splitLevel 等于当前 pageElem 的 Level 时，说明 其 ChildrenPage 里所有的元素都是当前 pageElem 的 子标题
-            // 因此将该 pageElem 的 ChildrenPage 里所有的元素标记为 subChapter
-
-            for (var i = 0; i < pageElem.ChildrenPage.Count; i++)
+            foreach (var t in pageElem.Children)
             {
-                AddElem(new TocElem($"Text/chapter_{offset}.xhtml#subChapter_{i}",
-                    pageElem.ChildrenPage[i].Heading,
-                    pageElem.Level + 1)
-                );
+                AddElem(new TocElem(pageElem.Url, t.Heading, pageElem.Level + 1));
             }
         }
-        else if (splitLevel >= pageElem.Level)
+        else if (pageElem.Level <= splitLevel)
         {
-            // 当splitLevel大于Page页面的等级的时候，说明当前Page的ChildrenPage是会生成单独xhtml文件的
-            // 因此递归调用AddTocElemFromPageElem方法将其添加到Toc，直到ChildrenPage的Level与SplitLevel相等
-
-            foreach (var elem in pageElem.ChildrenPage)
+            foreach (var elem in pageElem.Children)
             {
-                offset = AddElemFromPageElem(elem, offset, splitLevel);
+                AddElemFromPageElem(elem, splitLevel);
             }
         }
-
-        return offset += 1;
     }
 
     public override string ToString()

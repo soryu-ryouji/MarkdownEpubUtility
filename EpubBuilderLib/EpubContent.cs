@@ -32,15 +32,14 @@ public class EpubContent
 
     public string GenerateManifestItem()
     {
-        string item = "";
-        if (Type == EpubContentType.Html)
-            item = $"<item href=\"Text/{FileName}\" id=\"{FileName}\" media-type=\"application/xhtml+xml\"/>";
-        else if (Type == EpubContentType.Image)
-            item = $"<item href=\"Image/{FileName}.jpg\" id=\"{FileName}\" media-type=\"image/jpeg\"/>";
-        else if (Type == EpubContentType.Ncx)
-            item = $"<item href=\"{FileName}\" id=\"ncx\" media-type=\"application/x-dtbncx+xml\"/>";
-        else if (Type == EpubContentType.Css)
-            item = $"<item href=\"Styles/{FileName}\" id=\"stylesheet\"  media-type=\"text/css\"/>";
+        string item = Type switch
+        {
+            EpubContentType.Html =>  $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
+            EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
+            EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
+            EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
+            _ => ""
+        };
 
         return item;
     }
@@ -69,13 +68,13 @@ public class EpubContentList
     /// <summary>
     /// 根据 PageList 和 SplitLevel 提取出 EpubContent
     /// </summary>
-    /// <param name="pageList"></param>
+    /// <param name="htmlPages"></param>
     /// <param name="splitLevel"></param>
     /// <returns></returns>
-    public void ExtractPages(PageList pageList, int splitLevel)
+    public void ExtractPages(HtmlPages htmlPages, int splitLevel)
     {
         int chapterNum = 0;
-        foreach (var subPage in pageList.ElemList)
+        foreach (var subPage in htmlPages.ElemList)
         {
             chapterNum = ExtractSubPage(subPage, chapterNum, splitLevel);
         }
@@ -90,12 +89,12 @@ public class EpubContentList
         chapterNum++;
 
         // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
-        if (pageElem.ChildrenPage.Count != 0)
+        if (pageElem.Children.Count != 0)
         {
             // 当 splitLevel 大于 pageElem.Level 时，说明当前 pageElem 的子节点还可以继续细分为更小的 EpubContent
             if (splitLevel > pageElem.Level)
             {
-                foreach (var subPage in pageElem.ChildrenPage)
+                foreach (var subPage in pageElem.Children)
                 {
                     chapterNum = ExtractSubPage(subPage, chapterNum, splitLevel);
                 }
@@ -104,7 +103,7 @@ public class EpubContentList
             {
                 // 当 splitLevel 等于 pageElem.Level时
                 // 将当前 pageElem 下所有子元素的 Content 添加到 pageElem 中
-                Contents.Last().Content = PageElem.RenderSelfAndAllSubPageContent(pageElem);
+                Contents.Last().Content = PageElem.RenderPage(pageElem);
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using CompressionLevel = Ionic.Zlib.CompressionLevel;
-using ZipFile = Ionic.Zip.ZipFile;
+using Ionic.Zlib;
+using Ionic.Zip;
 
 namespace EpubBuilder;
 
@@ -31,7 +31,7 @@ public class Epub
         // 将 markdown文件中的相对路径转换为绝对路径
         ConvertMdAbsolutePath(mdLines, _buildMetadata.MdPath);
 
-        var pageList = ParseMd.SplitPage(mdLines, _buildMetadata.PageSplitLevel);
+        var pageList = ParseMd.ToHtmlPages(mdLines, _buildMetadata.PageSplitLevel);
         ContentList.ExtractPages(pageList, _buildMetadata.PageSplitLevel);
 
         var tocNcx = GenerateToc(pageList);
@@ -84,7 +84,7 @@ public class Epub
                 string html =
                     $"""
                      <?xml version='1.0' encoding='utf-8'?>
-                     <html xmlns="https://www.w3.org/1999/xhtml">
+                     <html xmlns="http://www.w3.org/1999/xhtml">
                          <head>
                              <title>{_epubMetadata.Title}</title>
                              <link href="../Styles/stylesheet.css" rel="stylesheet" type="text/css"/>
@@ -129,10 +129,10 @@ public class Epub
     /// <summary>
     /// 根据 pageList 来生成 toc 文件内容
     /// </summary>
-    public string GenerateToc(PageList pageList)
+    public string GenerateToc(HtmlPages htmlPages)
     {
         var toc = new Toc();
-        toc.GenerateTocFromPageList(pageList, _buildMetadata.PageSplitLevel);
+        toc.GenerateTocFromPageList(htmlPages, _buildMetadata.PageSplitLevel);
 
         // 生成 toc.ncx 内容
         string tocNcx =
@@ -158,16 +158,16 @@ public class Epub
         string opf =
             $"""
              <?xml version = "1.0"  encoding = "UTF-8"?>
-             <package xmlns = "https://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
-                 <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
-                 {_epubMetadata.GenerateOpfMetadata()}
-                 </metadata>
-                 <manifest>
-                 {GenerateOpfManifest(epubContentList)}
-                 </manifest>
-                 <spine toc = "ncx">
-                 {GenerateOpfSpine(epubContentList)}
-                 </spine>
+             <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
+             <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
+             {_epubMetadata.GenerateOpfMetadata()}
+             </metadata>
+             <manifest>
+             {GenerateOpfManifest(epubContentList)}
+             </manifest>
+             <spine toc = "ncx">
+             {GenerateOpfSpine(epubContentList)}
+             </spine>
              </package>
              """;
         return opf;

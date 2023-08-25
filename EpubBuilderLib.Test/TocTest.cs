@@ -25,7 +25,6 @@ public class TocTest
         toc.AddElem(new TocElem("", "Page_8", 4));
 
         var tree = toc.ToString();
-        _output.WriteLine(tree);
 
         var resultStr =
             """
