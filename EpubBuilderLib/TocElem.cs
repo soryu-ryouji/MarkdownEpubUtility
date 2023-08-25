@@ -1,70 +1,40 @@
+using System.Text;
+
 namespace EpubBuilder;
 
 public class TocElem
 {
-    private int _level;
-    private string _url;
-    private string _title;
-    public List<TocElem> Children;
-
-    public int Level
-    {
-        get { return _level; }
-        set { _level = value; }
-    }
-
-    public string Url
-    {
-        get { return _url; }
-    }
-
-    public string Title
-    {
-        get { return _title; }
-    }
+    public readonly List<TocElem> Children;
+    public int Level { get; set; }
+    private string Url { get; }
+    public string Title { get; }
 
     public TocElem(string url, string title)
     {
-        _level = 1;
-        _url = url;
-        _title = title;
-        Children = new();
+        Level = 1;
+        Url = url;
+        Title = title;
+        Children = new List<TocElem>();
     }
 
     public TocElem(string url, string title, int level)
     {
-        _level = level;
-        _url = url;
-        _title = title;
-        Children = new();
-    }
-
-    /// <summary>
-    /// 判断当前元素的子元素是否为空
-    /// </summary>
-    public bool ChildrenIsEmpty()
-    {
-        if (Children.Count == 0)
-        {
-            return true;
-        }
-
-        return false;
+        Level = level;
+        Url = url;
+        Title = title;
+        Children = new List<TocElem>();
     }
 
     /// <summary>
     /// 将当前元素和其子元素的Level都提升，其整体等级秩序保持不变
     /// </summary>
-    public void UpLevel(int level)
+    private void UpLevel(int level)
     {
         // Tips : 之所以是 level+1 ，是因为1代表一级标题，2代表二级标题
-        _level = level;
-        foreach (var child in Children)
+        Level = level;
+        foreach (var child in Children.Where(child => child.Level <= this.Level))
         {
-            if (child.Level <= this._level)
-            {
-                child.UpLevel(this.Level + 1);
-            }
+            child.UpLevel(this.Level + 1);
         }
     }
 
@@ -75,9 +45,9 @@ public class TocElem
     {
         // Tips : 之所以是 level+1 ，是因为1代表一级标题，2代表二级标题
         // 若被添加元素的level小于或等于当前元素的level，则将其元素等级设为比当前元素的level大1的状态
-        if (tocElement.Level <= this._level)
+        if (tocElement.Level <= this.Level)
         {
-            tocElement.UpLevel(this._level + 1);
+            tocElement.UpLevel(this.Level + 1);
         }
 
         Children.Add(tocElement);
@@ -108,41 +78,34 @@ public class TocElem
     /// <summary>
     /// 生成TocElement自身和其子元素的目录
     /// </summary>
-    public (int, string) RenderToc(int offset)
+    public (int offset, string renderText) RenderToc(int offset)
     {
         offset += 1;
-        int id = offset;
+        var id = offset;
         string childrenToc;
-        if (ChildrenIsEmpty())
-        {
-            childrenToc = "";
-        }
+        
+        if (Children.Count == 0) childrenToc = "";
         else
         {
             var childTocList = new List<string>();
-            foreach (var child in Children)
+            foreach (var childTuple in Children.Select(child => child.RenderToc(offset)))
             {
-                (int, string) childTuple = child.RenderToc(offset);
-                offset = childTuple.Item1;
-                childTocList.Add(childTuple.Item2);
+                offset = childTuple.offset;
+                childTocList.Add(childTuple.renderText);
             }
 
             childrenToc = string.Join("", childTocList);
         }
 
-        string output = string.Format(
-            "<navPoint id=\"navPoint-{0}\">\n" +
-            "<navLabel>" +
-            "<text>{1}</text>" +
-            "</navLabel>\n" +
-            "<content src=\"{2}\"/>\n" +
-            "{3}" +
-            "</navPoint>\n"
-            , id.ToString()
-            , _title
-            , _url
-            , childrenToc);
+        string renderText =
+            $"""
+            <navPoint id = "navPoint-{id.ToString()}">
+                <navLabel><text>{Title}</text></navLabel>
+                <content src = "{Url}" />
+                {childrenToc}
+            </navPoint>
+            """;
 
-        return (offset, output);
+        return (offset, renderText);
     }
 }

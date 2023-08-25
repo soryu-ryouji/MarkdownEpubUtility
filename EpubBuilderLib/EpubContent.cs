@@ -75,7 +75,7 @@ public class EpubContentList
     public void ExtractPages(PageList pageList, int splitLevel)
     {
         int chapterNum = 0;
-        foreach (var subPage in pageList.PageElemList)
+        foreach (var subPage in pageList.ElemList)
         {
             chapterNum = ExtractSubPage(subPage, chapterNum, splitLevel);
         }

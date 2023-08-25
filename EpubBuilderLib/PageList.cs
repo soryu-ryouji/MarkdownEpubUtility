@@ -2,25 +2,25 @@
 
 public class PageList
 {
-    public List<PageElem> PageElemList = new();
+    public List<PageElem> ElemList = new();
 
     public void AddPageElem(PageElem pageElement, int limitLevel)
     {
-        if (PageElemList.Count == 0)
+        if (ElemList.Count == 0)
         {
             // 如果当前页面列表中一个元素都没有，则默认将第一个元素设置为其子元素，并将其等级设置为1
             pageElement.Level = 1;
-            PageElemList.Add(pageElement);
+            ElemList.Add(pageElement);
         }
         else if (pageElement.Level == 1)
         {
             // 如果待添加页面的等级为1，则将其添加到当前子元素列表中
-            PageElemList.Add(pageElement);
+            ElemList.Add(pageElement);
         }
         else if (pageElement.Level > 1)
         {
             // 如果待添加页面的等级大于2，则将其添加到当前子元素的最末尾元素中，使用AddPageElem进行自动插入
-            PageElemList.Last().AddPageElem(pageElement, limitLevel);
+            ElemList.Last().AddPageElem(pageElement, limitLevel);
         }
     }
 
@@ -29,7 +29,7 @@ public class PageList
     /// </summary>
     public void PrintPageListStruct()
     {
-        foreach (var unit in PageElemList)
+        foreach (var unit in ElemList)
         {
             PrintPageChildrenStruct(unit);
         }
