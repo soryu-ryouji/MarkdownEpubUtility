@@ -72,46 +72,45 @@ public class Epub
 
         foreach (var content in ContentList.Contents)
         {
-            if (content.Type == EpubContentType.Html)
+            switch (content.Type)
             {
-                string html =
-                    $"""
-                     <?xml version='1.0' encoding='utf-8'?>
-                     <html xmlns="http://www.w3.org/1999/xhtml">
+                case EpubContentType.Html:
+                {
+                    var html =
+                        $"""
+                         <?xml version='1.0' encoding='utf-8'?>
+                         <html xmlns="http://www.w3.org/1999/xhtml">
                          <head>
-                             <title>{_epubMetadata.Title}</title>
-                             <link href="../Styles/stylesheet.css" rel="stylesheet" type="text/css"/>
+                         <title>{_epubMetadata.Title}</title>
+                         <link href="../Styles/stylesheet.css" rel="stylesheet" type="text/css"/>
                          </head>
                          <body>
-                             {content.Content}
+                         {content.Content}
                          </body>
-                     </html>
-                     """;
-                zip.AddEntry($"OEBPS/Text/{content.FileName}", html);
-            }
-            else if (content.Type == EpubContentType.Css)
-            {
-                zip.AddEntry($"OEBPS/Styles/{content.FileName}", content.Content);
-            }
-            else if (content.Type == EpubContentType.Jpg)
-            {
-                zip.AddEntry($"OEBPS/Image/{content.FileName}", File.ReadAllBytes(content.Content));
-            }
-            else if (content.Type == EpubContentType.Container)
-            {
-                zip.AddEntry($"META-INF/{content.FileName}", content.Content);
-            }
-            else if (content.Type == EpubContentType.Mimetype)
-            {
-                zip.AddEntry($"{content.FileName}", content.Content);
-            }
-            else if (content.Type == EpubContentType.Opf)
-            {
-                zip.AddEntry($"OEBPS/{content.FileName}", content.Content);
-            }
-            else if (content.Type == EpubContentType.Ncx)
-            {
-                zip.AddEntry($"OEBPS/{content.FileName}", content.Content);
+                         </html>
+                         """;
+                    zip.AddEntry($"OEBPS/Text/{content.FileName}", html);
+                    break;
+                }
+                case EpubContentType.Css:
+                    zip.AddEntry($"OEBPS/Styles/{content.FileName}", content.Content);
+                    break;
+                case EpubContentType.Jpg:
+                case EpubContentType.Png:
+                    zip.AddEntry($"OEBPS/Image/{content.FileName}", File.ReadAllBytes(content.Content));
+                    break;
+                case EpubContentType.Container:
+                    zip.AddEntry($"META-INF/{content.FileName}", content.Content);
+                    break;
+                case EpubContentType.Mimetype:
+                    zip.AddEntry($"{content.FileName}", content.Content);
+                    break;
+                case EpubContentType.Opf:
+                case EpubContentType.Ncx:
+                    zip.AddEntry($"OEBPS/{content.FileName}", content.Content);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -157,8 +156,8 @@ public class Epub
              <?xml version = "1.0"  encoding = "UTF-8"?>
              <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
              <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
-             {_epubMetadata.GenerateOpfMetadata()}
              {coverMetadata}
+             {_epubMetadata.GenerateOpfMetadata()}
              </metadata>
              <manifest>
              {GenerateOpfManifest(epubContentList)}

@@ -39,6 +39,7 @@ public class EpubContent
         {
             EpubContentType.Html =>  $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
             EpubContentType.Jpg => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
+            EpubContentType.Png => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/png"/>""",
             EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
             EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
             _ => ""
