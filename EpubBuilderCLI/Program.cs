@@ -7,7 +7,10 @@ class Program
 {
     public static void Main(string[] args)
     {
-        var unit = ParseCLI.ParseCommandLineArgs(args);
+        bool isRun = true;
+        var unit = ParseCLI.ParseCommandLineArgs(args, ref isRun);
+        if (isRun is not true) return;
+
         var epubMetadata = unit.epubMetadata;
         var buildMetadata = unit.buildMetadata;
         var buildPath = unit.buildPath;
@@ -24,7 +27,7 @@ class Program
 class Options
 {
     // Required
-    [Option('m', "markdown", Required = true, HelpText = "Markdown Path")]
+    [Option('m', "markdown", Required = false, HelpText = "Markdown Path")]
     public string? MdPath { get; set; }
     // Option
     [Option('c', "cover", Required = false, HelpText = "Cover Path ")]
@@ -57,29 +60,32 @@ class ParseCLI
     /// <summary>
     /// 解析命令行参数
     /// </summary>
-    public static (EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath) ParseCommandLineArgs(string[] args)
+    public static (EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath) ParseCommandLineArgs(string[] args, ref bool isRun)
     {
         string title = "";
         string author = "";
         string language = "";
         string uuid = "";
 
-        string mdpath = "";
+        string mdPath = "";
         string coverPath = "";
         string buildPath = "";
         int splitLevel = 1;
 
         Parser.Default.ParseArguments<Options>(args).WithParsed<Options>(options => {
-                mdpath = options.MdPath ?? throw new Exception("Markdown Path is null");
-                coverPath = options.CoverPath ?? "";
-                buildPath = options.BuildPath ?? Path.Combine(Path.GetDirectoryName(mdpath)!, $"{Path.GetFileNameWithoutExtension(mdpath)}.epub");
-                splitLevel = options.SplitLevel;
+            mdPath = options.MdPath ?? "";
+            coverPath = options.CoverPath ?? "";
+            buildPath = options.BuildPath ?? Path.Combine(Path.GetDirectoryName(mdPath)!, $"{Path.GetFileNameWithoutExtension(mdPath)}.epub");
+            splitLevel = options.SplitLevel;
 
-                title = options.Title ?? Path.GetFileNameWithoutExtension(mdpath);
-                author = options.Author ?? "EpubBuilder";
-                language = options.Language ?? "zh";
-                uuid = options.Uuid ?? "";
-            });
+            title = options.Title ?? Path.GetFileNameWithoutExtension(mdPath);
+            author = options.Author ?? "EpubBuilder";
+            language = options.Language ?? "zh";
+            uuid = options.Uuid ?? "";
+        });
+
+        if (mdPath is "") isRun = false;
+
 
         var epubMetadata = new EpubMetadata{
             Title = title,
@@ -87,7 +93,7 @@ class ParseCLI
             Language = language,
             Uuid = uuid
             };
-        var buildMetadata = new BuildMetadata(mdpath, coverPath, splitLevel);
+        var buildMetadata = new BuildMetadata(mdPath, coverPath, splitLevel);
         
         return (epubMetadata, buildMetadata ,buildPath);
     }
