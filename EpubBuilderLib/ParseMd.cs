@@ -34,25 +34,19 @@ class ParseMd
     /// <returns></returns>
     public static HtmlPages ToHtmlPages(List<string> markdownLines, int splitLevel)
     {
-        // 首先会读取 markdownList 的第一行，从第一行中拿到第一个页面的名称和等级，创建 Page，添加到 PageList 中
+        // 首先会读取 markdownList 的第一行，若第一行不为标题，则直接报错退出
         // 使用 AddPageElem 添加到 PageElem 到 PageList 中时，AddPageElem 会自动将段落排序到合适的位置
         // 当到达 split level 的等级时，所有的大于 split level 的页面，都会被添加其父 Page 的 ChildrenPage 列表中
 
         var pageList = new HtmlPages();
-
+        
         // 第一行必须是标题，如果不是，则直接报错退出
         if (GetHeadingLevel(markdownLines[0]) == 0)  Environment.Exit(10);
-
-        var newPage = new PageElem("Text/chapter_0.xhtml",GetHeadingLevel(markdownLines.First()), GetHeadingText(markdownLines.First()));
-        var curPage = newPage;
-        pageList.AddElem(newPage, splitLevel);
-        curPage.Content.Add(markdownLines.First());
         
-        // 因为提前获取了markdown的第一行，因此将第一行移除，避免之后重复创建
-        markdownLines.RemoveAt(0);
-
         var chapterIndex = 0;
         var subChapterIndex = 0;
+        var curPage = new PageElem("",1,"");
+
         foreach (var line in markdownLines)
         {
             // 当line为空时，直接跳过
@@ -62,20 +56,20 @@ class ParseMd
             var level = GetHeadingLevel(line);
             if (level != 0)
             {
-                var page = new PageElem("",level: level, heading: GetHeadingText(line));
+                var page = new PageElem("", level: level, heading: GetHeadingText(line));
                 curPage = page;
-                
+
                 pageList.AddElem(page, splitLevel);
             }
 
             if (level > splitLevel)
             {
-                curPage.Url = $"Text/chapter_{chapterIndex}.xhtml#subChapter_{subChapterIndex}";
+                curPage.Url = $"Text/chapter_{chapterIndex - 1}.xhtml#subChapter_{subChapterIndex}";
                 curPage.Content.Add(
                     $"""
-                    <h{level} id = "subChapter_{subChapterIndex}">{GetHeadingText(line)}</h{level}>
-                    
-                    """);
+                     <h{level} id = "subChapter_{subChapterIndex}">{GetHeadingText(line)}</h{level}>
+
+                     """);
                 subChapterIndex++;
             }
             else if (level != 0)
@@ -93,8 +87,8 @@ class ParseMd
                 curPage.Content.Add(
                     $"""
 
-                    {line}             
-                    """);
+                     {line}
+                     """);
             }
         }
 
