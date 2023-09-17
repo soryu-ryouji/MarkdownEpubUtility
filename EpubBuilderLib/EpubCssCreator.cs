@@ -12,14 +12,14 @@ public class CssCreator
                 text-indent: 2em;
                 font-weight: normal;
                 line-height: 1.84;
-                color: #000000
+                color: #000000;
             }
 
             h1 {
                 font-family: Source Han Sans SC;
                 font-size: 1.4em;
                 text-align: center;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.4;
                 color: #000000;
             }
@@ -28,7 +28,7 @@ public class CssCreator
                 font-family: Source Han Sans SC;
                 font-size: 1.28em;
                 text-align: center;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.4;
                 color: #000000;
             }
@@ -37,7 +37,7 @@ public class CssCreator
                 font-family: Source Han Sans SC;
                 font-size: 1.2em;
                 text-align: left;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.4;
                 color: #000000;
             }
@@ -46,7 +46,7 @@ public class CssCreator
                 font-family: Source Han Sans SC;
                 font-size: 1em;
                 text-align: left;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.2;
                 color: #000000;
             }
@@ -55,7 +55,7 @@ public class CssCreator
                 font-family: Source Han Sans SC;
                 font-size: 1em;
                 text-align: left;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.2;
                 color: #000000;
             }
@@ -64,9 +64,23 @@ public class CssCreator
                 font-family: Source Han Sans SC;
                 font-size: 1em;
                 text-align: left;
-                font-weight: normal;
+                font-weight: bold;
                 line-height: 1.2;
                 color: #000000;
+            }
+
+            pre {
+                background-color: #f4f4f4;
+                font-size: 0.9em;
+                border: 2px solid #ccc;
+                padding: 3px 5px;
+                overflow: auto;
+            }
+
+            code {
+                font-family: "Consolas", monospace;
+                font-size: 0.9em;
+                color: #333;
             }
             """;
         return cssStyles;
