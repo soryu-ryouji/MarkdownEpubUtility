@@ -1,4 +1,4 @@
-![logo](./Docs/Images/logo.png)
+![logo](./docs/images/logo.png)
 
 # Epub Builder Library
 
@@ -58,11 +58,11 @@ eb -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之
 
 ## Docs
 
-[Epub 电子书格式介绍](./Docs/Epub电子书格式.md)
+[Epub 电子书格式介绍](./docs/Epub电子书格式.md)
 
 
 ## LICENSE
 
-![MIT](./Docs/Images/MIT.png)
+![MIT](./docs/images/MIT.png)
 
 EpubBuilder is released under the MIT
