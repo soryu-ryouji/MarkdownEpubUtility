@@ -10,7 +10,7 @@ public class TocTest
     {
         _output = output;
     }
-    
+
     [Fact]
     public void TocToString_Test()
     {
@@ -38,7 +38,7 @@ public class TocTest
                         └─ Page_8
 
             """;
-        
+
         Assert.Equal(tree,resultStr);
     }
 }

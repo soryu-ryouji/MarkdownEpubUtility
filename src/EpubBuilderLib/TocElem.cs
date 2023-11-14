@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace EpubBuilder;
 
 public class TocElem
@@ -83,7 +81,7 @@ public class TocElem
         offset += 1;
         var id = offset;
         string childrenToc;
-        
+
         if (Children.Count == 0) childrenToc = "";
         else
         {
