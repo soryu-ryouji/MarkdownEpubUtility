@@ -24,9 +24,7 @@ var buildPath = @"D:\太原之恋.epub";
 var buildMetadata = new BuildMetadata(mdPath, coverPath, pageSplitLevel:1);
 
 var epub = new Epub(epubMetadata, buildMetadata);
-
-var zip = epub.Generate();
-zip.Save(buildPath);
+epub.CreateEpub().Save(buildPath);
 ```
 
 
@@ -52,7 +50,7 @@ zip.Save(buildPath);
 **Example**
 
 ```shell
-eb -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之炽.epub -s 2
+eb build -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之炽.epub -s 2
 ```
 
 
