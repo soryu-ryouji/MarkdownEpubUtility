@@ -1,93 +1,97 @@
 ﻿using EpubBuilder;
-using CommandLine;
+using System.CommandLine;
 
 namespace EpubBuilderCLI;
 
 class Program
 {
+    struct BuildCommandArgs
+    {
+        public string MdPath;
+        public string CoverPath;
+        public string BuildPath;
+        public string Language;
+        public string Title;
+        public string Author;
+        public string Uuid;
+        public int SplitLevel;
+    }
     public static void Main(string[] args)
     {
-        var (epubMetadata, buildMetadata, buildPath) = ParseCLI.ParseCommandLineArgs(args);
+        ParseArgs(args);
+    }
 
+    private static void ParseArgs(string[] args)
+    {
+        var rootCommand = new RootCommand();
+
+        var mdOption =  new Option<string?>(aliases: ["-m", "--markdown"], description: "Markdown Path") { IsRequired = true };
+        var coverOption = new Option<string?>(aliases: ["-c", "--cover"], description: "Cover Path", getDefaultValue: () => "");
+        var buildOption = new Option<string?>(aliases: ["-b", "--build"], description: "Build Path", getDefaultValue: () => "");
+        var languageOption = new Option<string?>(aliases: ["-l", "--language"], description: "Epub Language", getDefaultValue: () => "zh");
+        var titleOption = new Option<string?>(aliases: ["-t", "--title"], description: "Epub Title", getDefaultValue: () => "");
+        var authorOption = new Option<string?>(aliases: ["-a", "--author"], description: "Epub Author", getDefaultValue: () => "EpubBuilder");
+        var uuidOption = new Option<string?>(aliases: ["-u", "--uuid"], description: "Epub universally unique identifier", getDefaultValue: () => "");
+        var splitOption = new Option<int>(aliases: ["-s", "--split"], description: "Split Level", getDefaultValue: () => 1);
+
+        var buildCommand = new Command("build", "build epub book")
+        {
+            mdOption,
+            coverOption,
+            buildOption,
+            languageOption,
+            titleOption,
+            authorOption,
+            uuidOption,
+            splitOption
+        };
+
+        buildCommand.SetHandler((mdpath, cover, build, language, title, author, uuid, splitLevel) =>
+        {
+            var buildCommandArgs = new BuildCommandArgs
+            {
+                MdPath = mdpath,
+                CoverPath = cover,
+                BuildPath = build,
+                Language = language,
+                Title = title,
+                Author = author,
+                Uuid = uuid,
+                SplitLevel = splitLevel
+            };
+
+            var (epubMetadata, buildMetadata, buildPath) = HandleCommandLine(buildCommandArgs);
+            BuildEpub(epubMetadata, buildMetadata, buildPath);
+
+        },mdOption, coverOption, buildOption, languageOption, titleOption, authorOption, uuidOption, splitOption);
+
+        rootCommand.AddCommand(buildCommand);
+        rootCommand.Invoke(args);
+    }
+
+    private static void BuildEpub(EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath)
+    {
         var epub = new Epub(epubMetadata, buildMetadata);
         epub.CreateEpub().Save(buildPath);
     }
-}
 
-class Options
-{
-    // Required
-    [Option('m', "markdown", Required = false, HelpText = "Markdown Path")]
-    public string? MdPath { get; set; }
-    // Option
-    [Option('c', "cover", Required = false, HelpText = "Cover Path ")]
-    public string? CoverPath { get; set; }
-
-    [Option('b', "build", Required = false, HelpText = "Build Path")]
-    public string? BuildPath { get; set; }
-
-    [Option('l',"language",Required = false,HelpText = "Epub Language")]
-    public string? Language { get; set; }
-
-    [Option('t',"title",Required = false,HelpText = "Epub Title")]
-    public string? Title { get; set; }
-
-    [Option('a',"author",Required = false,HelpText = "Epub Author")]
-    public string? Author { get; set; }
-
-    [Option('u',"uuid",Required = false,HelpText = "Epub universally unique identifier")]
-    public string? Uuid { get; set; }
-
-    [Option('s',"split",Required = false,HelpText = "Split Level")]
-    public int SplitLevel { get; set; }
-}
-
-/// <summary>
-/// 使用命令行创建Epub电子书
-/// </summary>
-class ParseCLI
-{
-    /// <summary>
-    /// 解析命令行参数
-    /// </summary>
-    public static (EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath) ParseCommandLineArgs(string[] args)
+    private static (EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath) HandleCommandLine(BuildCommandArgs args)
     {
-        string title = "";
-        string author = "";
-        string language = "";
-        string uuid = "";
+        var epubMetadata = new EpubMetadata
+        {
+            Title = args.Title ?? Path.GetFileNameWithoutExtension(args.MdPath),
+            Author = args.Author ?? "EpubBuilder",
+            Language = args.Language ?? "zh",
+            Uuid = args.Uuid ?? ""
+        };
 
-        string mdPath = "";
-        string coverPath = "";
-        string buildPath = "";
-        int splitLevel = 1;
+        var mdLines = File.ReadAllLines(args.MdPath).ToList();
+        var buildMetadata = new BuildMetadata(mdLines, args.MdPath, args.CoverPath, args.SplitLevel);
 
-        Parser.Default.ParseArguments<Options>(args).WithParsed<Options>(options => {
-            mdPath = options.MdPath ?? "";
-            coverPath = options.CoverPath ?? "";
-            buildPath = options.BuildPath ??
-                Path.Combine(Path.GetDirectoryName(mdPath)!, $"{Path.GetFileNameWithoutExtension(mdPath)}.epub");
-            splitLevel = options.SplitLevel;
-
-            title = options.Title ?? Path.GetFileNameWithoutExtension(mdPath);
-            author = options.Author ?? "EpubBuilder";
-            language = options.Language ?? "zh";
-            uuid = options.Uuid ?? "";
-        });
-
-        var epubMetadata = new EpubMetadata{
-            Title = title,
-            Author = author,
-            Language = language,
-            Uuid = uuid
-            };
-
-        if (File.Exists(mdPath) is not true)
-            throw new ArgumentException($"Not markdown file found in the 「{mdPath}」");
-
-        var mdLines = File.ReadAllLines(mdPath).ToList();
-        var buildMetadata = new BuildMetadata(mdLines, mdPath, coverPath, splitLevel);
-
-        return (epubMetadata, buildMetadata ,buildPath);
+        if (string.IsNullOrEmpty(args.BuildPath))
+        {
+            args.BuildPath = Path.Combine(Path.GetDirectoryName(args.MdPath)!, $"{Path.GetFileNameWithoutExtension(args.MdPath)}.epub");
+        }
+        return (epubMetadata, buildMetadata, args.BuildPath);
     }
 }
