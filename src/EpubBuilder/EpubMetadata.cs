@@ -52,16 +52,13 @@ public class EpubMetadata
 
     public string GenerateOpfMetadata()
     {
-        var metadataList = new List<string>();
-
-        // Title Metadata
-        metadataList.Add(Title != "" ? $"<dc:title>{Title}</dc:title>" : "<dc:title>EpubBuilder</dc:title>");
-        // Author Metadata
-        metadataList.Add(Author != "" ? $"<dc:creator>{Author}</dc:creator>" : "<dc:creator>Anonymous</dc:creator>");
-        // Language Metadata
-        metadataList.Add(Language != "" ? $"<dc:language>{Language}</dc:language>" : "<dc:language>zh</dc:language>");
-        // Generator Metadata
-        metadataList.Add(Generator != "" ? $"<dc:publisher>{Generator}</dc:publisher>" : "<dc:publisher>EpubBuilder</dc:publisher>");
+        var metadataList = new List<string>
+        {
+            Title != "" ? $"<dc:title>{Title}</dc:title>" : "<dc:title>EpubBuilder</dc:title>",
+            Author != "" ? $"<dc:creator>{Author}</dc:creator>" : "<dc:creator>Anonymous</dc:creator>",
+            Language != "" ? $"<dc:language>{Language}</dc:language>" : "<dc:language>zh</dc:language>",
+            Generator != "" ? $"<dc:publisher>{Generator}</dc:publisher>" : "<dc:publisher>EpubBuilder</dc:publisher>"
+        };
 
         // Description Metadata
         if (Description != "") metadataList.Add($"<dc:description>{Description}</dc:description>");
@@ -79,8 +76,20 @@ public class EpubMetadata
         return string.Join("\n", metadataList);
     }
 
-    // private string GenerateUuid()
-    // {
-    //     return Guid.NewGuid().ToString();
-    // }
+    public override string ToString()
+    {
+        return
+        $"""
+        Title: {Title}
+        Author: {Author}
+        Language: {Language}
+        Generator: {Generator}
+        Description: {Description}
+        Subject: {Subject}
+        License: {License}
+        PublishedDate: {PublishedDate}
+        ModifiedDate: {ModifiedDate}
+        Uuid: {Uuid}
+        """;
+    }
 }
