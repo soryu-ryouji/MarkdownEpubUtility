@@ -5,9 +5,9 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpubBuilderCLI", "EpubBuilderCLI\EpubBuilderCLI.csproj", "{331BDA29-C156-4181-9611-5AADFE70659A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpubBuilderLib", "EpubBuilderLib\EpubBuilderLib.csproj", "{F6561254-A81F-4AAF-9F88-DB3087FFE380}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpubBuilder", "EpubBuilder\EpubBuilder.csproj", "{F6561254-A81F-4AAF-9F88-DB3087FFE380}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpubBuilderLib.Test", "EpubBuilderLib.Test\EpubBuilderLib.Test.csproj", "{45553519-EE36-4A3E-B682-08E9185913C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EpubBuilder.Test", "EpubBuilder.Test\EpubBuilder.Test.csproj", "{45553519-EE36-4A3E-B682-08E9185913C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
