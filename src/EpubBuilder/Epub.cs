@@ -5,16 +5,10 @@ using Ionic.Zip;
 
 namespace EpubBuilder;
 
-public class Epub
+public class Epub(EpubMetadata epubMetadata, BuildMetadata buildMetadata)
 {
-    private readonly EpubMetadata _epubMetadata;
-    private readonly BuildMetadata _buildMetadata;
-
-    public Epub(EpubMetadata epubMetadata, BuildMetadata buildMetadata)
-    {
-        _epubMetadata = epubMetadata;
-        _buildMetadata = buildMetadata;
-    }
+    private readonly EpubMetadata _epubMetadata = epubMetadata;
+    private readonly BuildMetadata _buildMetadata = buildMetadata;
 
     public ZipFile CreateEpub()
     {
@@ -152,7 +146,7 @@ public class Epub
             <docTitle><text>{_epubMetadata.Title}</text></docTitle>
             <docAuthor><text>{_epubMetadata.Author}</text></docAuthor>
             <navMap>
-            {toc.RenderToc()}
+            {toc.Render()}
             </navMap>
             </ncx>
             """;
