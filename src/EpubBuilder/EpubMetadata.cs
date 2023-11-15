@@ -7,48 +7,34 @@ namespace EpubBuilder;
 public class EpubMetadata
 {
     // 电子书标题
-    public string Title;
+    public string Title = "";
 
     // 电子书作者
-    public string Author;
+    public string Author = "";
 
     // 电子书语言
-    public string Language;
+    public string Language = "";
 
     // 电子书发布者
-    public string Generator;
+    public string Generator = "";
 
     // 电子书描述
-    public string Description;
+    public string Description = "";
 
     // 电子书主题
-    public string Subject;
+    public string Subject = "";
 
     // 电子书许可证
-    public string License;
+    public string License = "";
 
     // 电子书发布时间
-    public string PublishedDate;
+    public string PublishedDate = "";
 
     // 电子书修改时间
-    public string ModifiedDate;
+    public string ModifiedDate = "";
 
     // 电子书唯一标识符
-    public string Uuid;
-
-    public EpubMetadata()
-    {
-        Title = "";
-        Author = "";
-        Language = "";
-        Generator = "";
-        Description = "";
-        Subject = "";
-        License = "";
-        PublishedDate = "";
-        ModifiedDate = "";
-        Uuid = "";
-    }
+    public string Uuid = "";
 
     public string GenerateOpfMetadata()
     {

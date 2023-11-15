@@ -4,7 +4,7 @@ namespace EpubBuilder;
 
 public class HtmlPages
 {
-    public readonly List<PageElem> ElemList = new();
+    public readonly List<PageElem> ElemList = [];
 
     public void AddElem(PageElem pageElement, int limitLevel)
     {

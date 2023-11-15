@@ -2,20 +2,13 @@
 
 namespace EpubBuilder;
 
-public class PageElem
+public class PageElem(string url, int level, string heading)
 {
-    public int Level;
-    public string Url;
-    public readonly string Heading;
-    public readonly List<string> Content = new();
-    public readonly List<PageElem> Children = new();
-
-    public PageElem(string url, int level, string heading)
-    {
-        Url = url;
-        Level = level;
-        Heading = heading;
-    }
+    public int Level = level;
+    public string Url = url;
+    public readonly string Heading = heading;
+    public readonly List<string> Content = [];
+    public readonly List<PageElem> Children = [];
 
     public void AddElem(PageElem newPageElement, int limitLevel)
     {
@@ -42,7 +35,7 @@ public class PageElem
         }
     }
 
-    public static string RenderPage(PageElem pageElem)
+    public static string Render(PageElem pageElem)
     {
         var sb = new StringBuilder();
         sb.Append(ParseMd.Md2Html(string.Join("\n", pageElem.Content)));
@@ -51,7 +44,7 @@ public class PageElem
         {
             foreach (var unit in pageElem.Children)
             {
-                sb.Append(RenderPage(unit));
+                sb.Append(Render(unit));
             }
         }
 

@@ -1,17 +1,10 @@
 namespace EpubBuilder;
 
-public class EpubContent
+public class EpubContent(EpubContentType type, string fileName, string content)
 {
-    public readonly EpubContentType Type;
-    public string FileName;
-    public string Content;
-
-    public EpubContent(EpubContentType type, string fileName, string content)
-    {
-        Type = type;
-        FileName = fileName;
-        Content = content;
-    }
+    public readonly EpubContentType Type = type;
+    public string FileName = fileName;
+    public string Content = content;
 
     public string GenerateManifestItem()
     {

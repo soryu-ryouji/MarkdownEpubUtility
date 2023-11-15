@@ -1,27 +1,12 @@
 namespace EpubBuilder;
 
-public class TocElem
+public class TocElem(string url, string title, int level = 1)
 {
-    public readonly List<TocElem> Children;
-    public int Level { get; set; }
-    private string Url { get; }
-    public string Title { get; }
+    public readonly List<TocElem> Children = [];
+    public int Level { get; set; } = level;
+    private string Url { get; } = url;
+    public string Title { get; } = title;
 
-    public TocElem(string url, string title)
-    {
-        Level = 1;
-        Url = url;
-        Title = title;
-        Children = new List<TocElem>();
-    }
-
-    public TocElem(string url, string title, int level)
-    {
-        Level = level;
-        Url = url;
-        Title = title;
-        Children = new List<TocElem>();
-    }
 
     /// <summary>
     /// 将当前元素和其子元素的Level都提升，其整体等级秩序保持不变
@@ -76,7 +61,7 @@ public class TocElem
     /// <summary>
     /// 生成TocElement自身和其子元素的目录
     /// </summary>
-    public (int offset, string renderText) RenderToc(int offset)
+    public (int offset, string renderText) Render(int offset)
     {
         offset += 1;
         var id = offset;
@@ -86,7 +71,7 @@ public class TocElem
         else
         {
             var childTocList = new List<string>();
-            foreach (var childTuple in Children.Select(child => child.RenderToc(offset)))
+            foreach (var childTuple in Children.Select(child => child.Render(offset)))
             {
                 offset = childTuple.offset;
                 childTocList.Add(childTuple.renderText);

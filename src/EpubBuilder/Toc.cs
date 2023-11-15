@@ -4,11 +4,10 @@ namespace EpubBuilder;
 
 /// <summary>
 /// Table of Contents
-/// Epub 电子书 目录
 /// </summary>
 public class Toc
 {
-    public readonly List<TocElem> ElemList = new();
+    public readonly List<TocElem> ElemList = [];
 
     /// <summary>
     /// 将元素添加到所有子元素的最后
@@ -32,11 +31,11 @@ public class Toc
     /// <summary>
     /// 渲染 Toc 元素当前的目录
     /// </summary>
-    public string RenderToc()
+    public string Render()
     {
         var renderText = new List<string>();
         var offset = 0;
-        foreach (var tocTuple in ElemList.Select(elem => elem.RenderToc(offset)))
+        foreach (var tocTuple in ElemList.Select(elem => elem.Render(offset)))
         {
             offset = tocTuple.offset;
             renderText.Add(tocTuple.renderText);
@@ -102,7 +101,7 @@ public class Toc
         return sb.ToString();
     }
 
-    private void PrintTree(TocElem elem, string indent, bool isLast, StringBuilder sb)
+    private static void PrintTree(TocElem elem, string indent, bool isLast, StringBuilder sb)
     {
         string curLine;
         if (isLast)

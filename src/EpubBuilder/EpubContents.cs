@@ -5,12 +5,7 @@ namespace EpubBuilder;
 
 public class EpubContents: IEnumerable<EpubContent>
 {
-    private List<EpubContent> _contents;
-
-    public EpubContents()
-    {
-        _contents = new List<EpubContent>();
-    }
+    private List<EpubContent> _contents = [];
 
     public void ExtractPages(HtmlPages htmlPages, int splitLevel)
     {
@@ -57,7 +52,7 @@ public class EpubContents: IEnumerable<EpubContent>
             {
                 // 当 splitLevel 等于 pageElem.Level时
                 // 将当前 pageElem 下所有子元素的 Content 添加到 pageElem 中
-                _contents.Last().Content = PageElem.RenderPage(pageElem);
+                _contents.Last().Content = PageElem.Render(pageElem);
             }
         }
 

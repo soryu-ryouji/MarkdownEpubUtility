@@ -1,19 +1,11 @@
 namespace EpubBuilder;
 
-public class BuildMetadata
+public class BuildMetadata(List<string> mdLines, string mdPath, string coverPath, int pageSplitLevel)
 {
-    public List<string> MdLines { get; set;}
-    public string MdPath { get; }
-    public string CoverPath { get; }
-    public int PageSplitLevel { get; }
-
-    public BuildMetadata(List<string> mdLines, string mdPath, string coverPath, int pageSplitLevel)
-    {
-        MdLines = mdLines ?? new();
-        MdPath = mdPath;
-        CoverPath = coverPath;
-        PageSplitLevel = Math.Max(1, pageSplitLevel);
-    }
+    public List<string> MdLines { get; set; } = mdLines ?? [];
+    public string MdPath { get; } = mdPath;
+    public string CoverPath { get; } = coverPath;
+    public int PageSplitLevel { get; } = Math.Max(1, pageSplitLevel);
 
     public override string ToString()
     {
