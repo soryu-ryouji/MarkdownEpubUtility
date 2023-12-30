@@ -58,6 +58,8 @@ eb build -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\
 
 [Epub 电子书格式介绍](./docs/Epub电子书格式.md)
 
+[EpubBuilder执行流程](./docs//EpubBuilder执行流程.md)
+
 
 ## LICENSE
 
