@@ -82,9 +82,9 @@ public class TocElem(string url, string title, int level = 1)
 
         string renderText =
             $"""
-            <navPoint id = "navPoint-{id.ToString()}">
+            <navPoint id = "navPoint-{id}">
                 <navLabel><text>{Title}</text></navLabel>
-                <content src = "{Url}" />
+                <content src = "{Url}"/>
                 {childrenToc}
             </navPoint>
             """;
