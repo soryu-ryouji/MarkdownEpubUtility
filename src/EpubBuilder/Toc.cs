@@ -62,7 +62,7 @@ public class Toc
     {
         var tocElem = new TocElem(pageElem.Url, pageElem.Heading, pageElem.Level);
         AddElem(tocElem);
-        
+
         // 这里判断子元素是否需要继续递归
         if (pageElem.Level > splitLevel)
         {
@@ -88,9 +88,9 @@ public class Toc
         {
             var elem = ElemList[n];
             var indent = (n == ElemList.Count - 1) ?  "    " : "\u2502   ";
-            
+
             sb.Append(elem.Title + Environment.NewLine);
-            
+
             var childCount = elem.Children.Count;
             for (var i = 0; i < childCount; i++)
             {

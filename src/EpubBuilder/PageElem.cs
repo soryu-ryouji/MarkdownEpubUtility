@@ -38,7 +38,7 @@ public class PageElem(string url, int level, string heading)
     public static string Render(PageElem pageElem)
     {
         var sb = new StringBuilder();
-        sb.Append(ParseMd.Md2Html(string.Join("\n", pageElem.Content)));
+        sb.Append(EpubConvert.Md2Html(string.Join("\n", pageElem.Content)));
 
         if (pageElem.Children.Count != 0)
         {
