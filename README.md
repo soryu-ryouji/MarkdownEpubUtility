@@ -1,25 +1,29 @@
-![logo](./docs/images/logo.png)
+![logo](./docs//images/logo.png)
 
-# Epub Builder Library
+# Epub Builder
 
-Epub Builder 是一个将 Markdown 文档转换为 Epub 电子书的跨平台的库。
+[简体中文](./README-zh.md)
 
-通过 `SplitLevel` 参数，可以实现电子书内容的分割显示，避免了所有内容挤在一张 `html`中造成了加载迟缓。
+Epub Builder is a cross platform library that converts Markdown documents into Epub e-books.
 
+By using the 'SplitLevel' parameter, it is possible to achieve the segmentation and display of e-book content, avoiding loading delays caused by all content being squeezed into one 'HTML'.
 
 **Example**
 
-```c#
+```shell
+**Example**
+
+```csharp
 var epubMetadata = new EpubMetadata
 {
-    Title = "太原之恋",
-    Language = "zh",
-    Author = "刘慈欣",
+    Title = "The Art of Unix Programming",
+    Language = "en",
+    Author = "Eric S. Raymond",
 };
 
-var mdPath = @"D:\Books\Novel\太原之恋\太原之恋.md";
-var coverPath = @"D:\Books\Novel\太原之恋\cover.jpg";
-var buildPath = @"D:\太原之恋.epub";
+var mdPath = @"D:\Books\Novel\TheArtofUnixProgramming\TheArtofUnixProgramming.md";
+var coverPath = @"D:\Books\Novel\TheArtofUnixProgramming\cover.jpg";
+var buildPath = @"D:\TheArtofUnixProgramming.epub";
 
 var buildMetadata = new BuildMetadata(mdPath, coverPath, pageSplitLevel:1);
 
@@ -27,39 +31,29 @@ var epub = new Epub(epubMetadata, buildMetadata);
 epub.CreateEpub().Save(buildPath);
 ```
 
+# Epub Builder CLI
 
-# EpubBuilder CLI
-
-`-m` / `--markdown` : markdown 文件路径（必填）
-
-`-c` / `--cover` : cover 文件路径
-
-`-b` / `--build` : epub 文件生成路径
-
-`-l` / `--language` : epub 语言
-
-`-t` / `--title` : epub 电子书名称
-
-`-a` / `--author` : 作者姓名
-
-`-u` / `--uuid` : epub 唯一标识符
-
-`-s` / `--split` : 页文件分割等级
+| short name | long name    | description                          |
+| ---------- | ------------ | ------------------------------------ |
+| `-m`       | `--markdown` | Path to the markdown file (required) |
+| `-c`       | `--cover`    | Path to the cover file               |
+| `-b`       | `--build`    | Path to generate the EPUB file       |
+| `-l`       | `--language` | Language for the EPUB                |
+| `-t`       | `--title`    | Title of the EPUB ebook              |
+| `-a`       | `--author`   | Author's name                        |
+| `-u`       | `--uuid`     | Unique identifier for the EPUB       |
+| `-s`       | `--split`    | Level of page file splitting         |
 
 
 **Example**
 
 ```shell
-eb build -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之炽.epub -s 2
+eb build --markdowm file.md --cover cover.jpg --split 2 -author author
+
+eb build -m file.md -c cover.jpg -s 2 -a author
 ```
 
-
-## Docs
-
-[Epub 电子书格式介绍](./docs/Epub电子书格式.md)
-
-
-## LICENSE
+# LICENSE
 
 ![MIT](./docs/images/MIT.png)
 
