@@ -10,10 +10,7 @@ By using the 'SplitLevel' parameter, it is possible to achieve the segmentation 
 
 **Example**
 
-```shell
-**Example**
-
-```csharp
+```c#
 var epubMetadata = new EpubMetadata
 {
     Title = "The Art of Unix Programming",
