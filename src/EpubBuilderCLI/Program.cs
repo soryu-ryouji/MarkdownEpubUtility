@@ -26,13 +26,13 @@ class Program
         var rootCommand = new RootCommand();
 
         var mdOption =  new Option<string?>(aliases: ["-m", "--markdown"], description: "Markdown Path") { IsRequired = true };
-        var coverOption = new Option<string?>(aliases: ["-c", "--cover"], description: "Cover Path", getDefaultValue: () => "");
-        var buildOption = new Option<string?>(aliases: ["-b", "--build"], description: "Build Path", getDefaultValue: () => "");
-        var languageOption = new Option<string?>(aliases: ["-l", "--language"], description: "Epub Language", getDefaultValue: () => "zh");
-        var titleOption = new Option<string?>(aliases: ["-t", "--title"], description: "Epub Title", getDefaultValue: () => "");
-        var authorOption = new Option<string?>(aliases: ["-a", "--author"], description: "Epub Author", getDefaultValue: () => "EpubBuilder");
-        var uuidOption = new Option<string?>(aliases: ["-u", "--uuid"], description: "Epub universally unique identifier", getDefaultValue: () => "");
-        var splitOption = new Option<int>(aliases: ["-s", "--split"], description: "Split Level", getDefaultValue: () => 1);
+        var coverOption = new Option<string?>(aliases: ["-c", "--cover"], description: "Cover Path");
+        var buildOption = new Option<string?>(aliases: ["-b", "--build"], description: "Build Path");
+        var languageOption = new Option<string?>(aliases: ["-l", "--language"], description: "Epub Language");
+        var titleOption = new Option<string?>(aliases: ["-t", "--title"], description: "Epub Title");
+        var authorOption = new Option<string?>(aliases: ["-a", "--author"], description: "Epub Author");
+        var uuidOption = new Option<string?>(aliases: ["-u", "--uuid"], description: "Epub universally unique identifier");
+        var splitOption = new Option<int>(aliases: ["-s", "--split"], description: "Split Level");
 
         var buildCommand = new Command("build", "build epub book")
         {
@@ -50,13 +50,13 @@ class Program
         {
             var buildCommandArgs = new BuildCommandArgs
             {
-                MdPath = mdpath,
-                CoverPath = cover,
-                BuildPath = build,
-                Language = language,
-                Title = title,
-                Author = author,
-                Uuid = uuid,
+                MdPath = mdpath ?? "",
+                CoverPath = cover ?? "",
+                BuildPath = build ?? "",
+                Language = language ?? "",
+                Title = title ?? "",
+                Author = author ?? "",
+                Uuid = uuid ?? "",
                 SplitLevel = splitLevel
             };
 
@@ -79,7 +79,8 @@ class Program
     {
         var epubMetadata = new EpubMetadata
         {
-            Title = args.Title ?? Path.GetFileNameWithoutExtension(args.MdPath),
+            
+            Title = string.IsNullOrWhiteSpace(args.Title) ? Path.GetFileNameWithoutExtension(args.MdPath) : args.Title,
             Author = args.Author ?? "EpubBuilder",
             Language = args.Language ?? "zh",
             Uuid = args.Uuid ?? ""
