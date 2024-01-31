@@ -82,6 +82,14 @@ public class CssCreator
                 font-size: 0.9em;
                 color: #333;
             }
+
+            img {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+                max-width: 100%;
+                height: auto;
+            }
             """;
         return cssStyles;
     }
