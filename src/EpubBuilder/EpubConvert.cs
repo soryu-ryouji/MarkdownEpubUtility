@@ -5,6 +5,18 @@ namespace EpubBuilder;
 
 class EpubConvert
 {
+
+    public static string RemoveExtraBlankLines(string input)
+    {
+        // 使用正则表达式替换多余的空行
+        string pattern = @"^\s*$\n|\r";
+        string replacement = "";
+        Regex regex = new Regex(pattern, RegexOptions.Multiline);
+        string result = regex.Replace(input, replacement);
+
+        return result;
+    }
+
     # region Convert Html To List<EpubContent>
     public static List<EpubContent> HtmlPagesToEpubContentList(HtmlPages htmlPages, int splitLevel)
     {
@@ -54,7 +66,7 @@ class EpubConvert
         var toc = new Toc();
         toc.GenerateTocFromPageList(htmlPages, splitLevel);
 
-        return
+        string result = RemoveExtraBlankLines(
             $"""
             <?xml version = "1.0" encoding = "utf-8"?>
             <ncx xmlns = "http://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
@@ -67,7 +79,9 @@ class EpubConvert
             {toc.Render()}
             </navMap>
             </ncx>
-            """;
+            """);
+
+        return result;
     }
 
     # endregion
@@ -79,22 +93,25 @@ class EpubConvert
         var coverMetadata = "";
         if (epubContents.SearchContent("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
 
-        return
-            $"""
-            <?xml version = "1.0"  encoding = "UTF-8"?>
-            <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
-            <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
-            {coverMetadata}
-            {epubMetadata.GenerateOpfMetadata()}
-            </metadata>
-            <manifest>
-            {GenerateOpfManifest(epubContents)}
-            </manifest>
-            <spine toc = "ncx">
-            {GenerateOpfSpine(epubContents)}
-            </spine>
-            </package>
-            """;
+        string opf = RemoveExtraBlankLines(
+                $"""
+                <?xml version = "1.0"  encoding = "UTF-8"?>
+                <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
+                <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
+                {coverMetadata}
+                {epubMetadata.GenerateOpfMetadata()}
+                </metadata>
+                <manifest>
+                {GenerateOpfManifest(epubContents)}
+                </manifest>
+                <spine toc = "ncx">
+                {GenerateOpfSpine(epubContents)}
+                </spine>
+                </package>
+                """);
+
+        return opf;
+        
     }
 
     public static string GenerateOpfManifest(EpubContents epubContents)
@@ -215,7 +232,7 @@ class EpubConvert
 
 
     # region Markdown Image Path To Absolute Path
-        public static void ConvertMdAbsolutePath(List<string> lines, string mdFilePath, EpubContents epubContents)
+    public static void ConvertMdAbsolutePath(List<string> lines, string mdFilePath, EpubContents epubContents)
     {
         ConvertMdImagePath(lines, mdFilePath, epubContents);
     }
@@ -237,7 +254,7 @@ class EpubConvert
                 string fileName = $"image_{numCount}";
 
                 epubContents.AddImage(fileName, absoluteImagePath);
-                lines[i] = $"""<img alt = "{fileName}" src = "../Image/{fileName}{fileExtension}"/>""";
+                lines[i] = $"""<img alt = "{fileName}" src = "../Image/{fileName}{fileExtension}" />""";
 
                 numCount++;
             }
