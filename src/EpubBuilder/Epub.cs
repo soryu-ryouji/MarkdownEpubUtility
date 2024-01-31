@@ -37,8 +37,9 @@ public class Epub
         contents.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, buildMetadata.SplitLevel));
 
         if (buildMetadata.CoverPath != "") contents.AddImage("cover", buildMetadata.CoverPath);
-        contents.Add(new (EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(contents, epubMetadata)));
+        // Tips: Toc文件需要在opf文件生成前生成，否则不会被添加进列表中
         contents.Add(new (EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, buildMetadata.SplitLevel)));
+        contents.Add(new (EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(contents, epubMetadata)));
     }
 
     public ZipFile CreateEpub()
