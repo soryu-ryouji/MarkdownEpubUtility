@@ -6,18 +6,18 @@ namespace EpubBuilder;
 
 public class Epub
 {
-    public EpubMetadata epubMetadata;
-    public BuildMetadata buildMetadata;
-    public EpubContents contents = [];
+    public EpubMetadata EpubData;
+    public BuildMetadata BuildData;
+    public EpubContents Contents = [];
 
-    public Epub(EpubMetadata epubMetadata, BuildMetadata buildMetadata)
+    public Epub(EpubMetadata epubData, BuildMetadata buildData)
     {
-        this.epubMetadata = epubMetadata;
-        this.buildMetadata = buildMetadata;
+        this.EpubData = epubData;
+        this.BuildData = buildData;
 
         // Init Contents
-        contents.Add(new (EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
-        contents.Add(new (EpubContentType.Container, "container.xml",
+        Contents.Add(new EpubContent(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
+        Contents.Add(new EpubContent(EpubContentType.Container, "container.xml",
             """
             <?xml version="1.0"?>
             <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -26,20 +26,20 @@ public class Epub
                 </rootfiles>
             </container>
             """));
-        contents.Add(new (EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
+        Contents.Add(new (EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
     }
 
     private void GenerateContent()
     {
-        EpubConvert.ConvertMdAbsolutePath(buildMetadata.MdLines, buildMetadata.MdPath, contents);
+        EpubConvert.ConvertMdAbsolutePath(BuildData.MdLines, BuildData.MdPath, Contents);
 
-        var pages = EpubConvert.ToHtmlPages(buildMetadata.MdLines, buildMetadata.SplitLevel);
-        contents.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, buildMetadata.SplitLevel));
+        var pages = EpubConvert.ToHtmlPages(BuildData.MdLines, BuildData.SplitLevel);
+        Contents.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, BuildData.SplitLevel));
 
-        if (buildMetadata.CoverPath != "") contents.AddImage("cover", buildMetadata.CoverPath);
+        if (BuildData.CoverPath != "") Contents.AddImage("cover", BuildData.CoverPath);
         // Tips: Toc文件需要在opf文件生成前生成，否则不会被添加进列表中
-        contents.Add(new (EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, buildMetadata.SplitLevel)));
-        contents.Add(new (EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(contents, epubMetadata)));
+        Contents.Add(new (EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
+        Contents.Add(new (EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Contents, EpubData)));
     }
 
     public ZipFile CreateEpub()
@@ -49,7 +49,7 @@ public class Epub
         var zip = new ZipFile(Encoding.UTF8)
         {
             CompressionLevel = CompressionLevel.Level0,
-            Name = $"{epubMetadata.Title}.epub"
+            Name = $"{EpubData.Title}.epub"
         };
 
         zip.AddDirectoryByName("META-INF");
@@ -58,7 +58,7 @@ public class Epub
         zip.AddDirectoryByName("OEBPS/Image");
         zip.AddDirectoryByName("OEBPS/Styles");
 
-        foreach (var content in contents)
+        foreach (var content in Contents)
         {
             switch (content.Type)
             {

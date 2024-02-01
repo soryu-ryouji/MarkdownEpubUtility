@@ -22,26 +22,13 @@ public class EpubContent(EpubContentType type, string fileName, string content)
     public string Content = content;
 
     // Just Html Content can be created as SpineItem
-    public string SpineItem
-    {
-        get
-        {
-            if (Type is EpubContentType.Html)
-            {
-                return $"""<itemref idref = "{FileName}"/>""";
-            }
-            else
-            {
-                return string.Empty;
-            }
-        }
-    }
+    public string SpineItem => Type is EpubContentType.Html ? $"""<itemref idref = "{FileName}"/>""" : string.Empty;
 
     public string ManifestItem
     {
         get
         {
-            string item = Type switch
+            var item = Type switch
             {
                 EpubContentType.Html => $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
                 EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
@@ -89,8 +76,6 @@ public class EpubContent(EpubContentType type, string fileName, string content)
 
             default: throw new InvalidOperationException($"Cannot get data from {Type}");
         }
-
-        throw new InvalidOperationException($"Unsupported content type: {Type}");
     }
 
     public override string ToString()
