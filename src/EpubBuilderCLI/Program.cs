@@ -5,7 +5,7 @@ namespace EpubBuilderCLI;
 
 class Program
 {
-    struct BuildCommandArgs
+    private struct BuildCommandArgs
     {
         public string MdPath;
         public string CoverPath;
@@ -81,9 +81,9 @@ class Program
         {
             
             Title = string.IsNullOrWhiteSpace(args.Title) ? Path.GetFileNameWithoutExtension(args.MdPath) : args.Title,
-            Author = args.Author ?? "EpubBuilder",
-            Language = args.Language ?? "zh",
-            Uuid = args.Uuid ?? ""
+            Author = string.IsNullOrWhiteSpace(args.Author) ? "EpubBuilder" : args.Author,
+            Language = string.IsNullOrWhiteSpace(args.Language) ? "zh" : args.Language,
+            Uuid = string.IsNullOrWhiteSpace(args.Uuid) ? "" : args.Uuid
         };
 
         var mdLines = File.ReadAllLines(args.MdPath).ToList();
