@@ -13,22 +13,15 @@ public class EpubContentItem(EpubContentType type, string fileName, string conte
     // Just Html Content can be created as SpineItem
     public string SpineItem => Type is EpubContentType.Html ? $"""<itemref idref = "{FileName}"/>""" : string.Empty;
 
-    public string ManifestItem
+    public string ManifestItem => Type switch
     {
-        get
-        {
-            var item = Type switch
-            {
-                EpubContentType.Html => $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
-                EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
-                EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
-                EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
-                _ => string.Empty
-            };
-
-            return item;
-        }
-    }
+        EpubContentType.Html =>
+            $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
+        EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
+        EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
+        EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
+        _ => string.Empty
+    };
 
     public byte[] GetData()
     {

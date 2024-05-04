@@ -7,22 +7,57 @@ namespace MarkdownEpubUtility;
 /// </summary>
 public class EpubToc
 {
-    public readonly List<EpubTocItem> ElemList = [];
+    public readonly List<EpubTocItem> Toc = [];
 
     /// <summary>
     /// Add the element to the end of all child elements
     /// If the element is smaller than the Level of the last element, compare it to the Levels of the children of the last element.
     /// If the level is the same, or if it is greater than the end element, put it after that element
     /// </summary>
-    public void AddElem(EpubTocItem tocElem)
+    public void Add(EpubTocItem tocElem)
     {
-        if (ElemList.Count == 0)
+        if (Toc.Count == 0)
         {
             tocElem.Level = 1;
-            ElemList.Add(tocElem);
+            Toc.Add(tocElem);
         }
-        else if (tocElem.Level == 1) ElemList.Add(tocElem);
-        else ElemList.Last().AddElem(tocElem);
+        else if (tocElem.Level == 1) Toc.Add(tocElem);
+        else Toc.Last().Add(tocElem);
+    }
+
+    /// <summary>
+    /// Adding a TocItem to a Toc using a EpubPageItem
+    /// </summary>
+    private void Add(EpubPageItem pageItem, int splitLevel)
+    {
+        var tocElem = new EpubTocItem(pageItem.Url, pageItem.Heading, pageItem.Level);
+        Add(tocElem);
+
+        if (pageItem.Level > splitLevel)
+        {
+            foreach (var t in pageItem.Children)
+            {
+                Add(new EpubTocItem(pageItem.Url, t.Heading, pageItem.Level + 1));
+            }
+        }
+        else if (pageItem.Level <= splitLevel)
+        {
+            foreach (var elem in pageItem.Children)
+            {
+                Add(elem, splitLevel);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Generating a Toc with PageList
+    /// </summary>
+    public void GenerateFromPage(EpubPage htmlPages, int splitLevel)
+    {
+        foreach (var pageElem in htmlPages.ElemList)
+        {
+            Add(pageElem, splitLevel);
+        }
     }
 
     /// <summary>
@@ -32,7 +67,7 @@ public class EpubToc
     {
         var renderText = new List<string>();
         var offset = 0;
-        foreach (var tocTuple in ElemList.Select(elem => elem.Render(offset)))
+        foreach (var tocTuple in Toc.Select(elem => elem.Render(offset)))
         {
             offset = tocTuple.offset;
             renderText.Add(tocTuple.renderText);
@@ -41,49 +76,14 @@ public class EpubToc
         return string.Join("", renderText);
     }
 
-    /// <summary>
-    /// Generating a Toc with PageList
-    /// </summary>
-    public void GenerateTocFromPageList(EpubPage htmlPages, int splitLevel)
-    {
-        foreach (var pageElem in htmlPages.ElemList)
-        {
-            AddElemFromPageElem(pageElem, splitLevel);
-        }
-    }
-
-    /// <summary>
-    /// Adding a TocElem to a Toc using a PageElem
-    /// </summary>
-    private void AddElemFromPageElem(EpubPageItem pageElem, int splitLevel)
-    {
-        var tocElem = new EpubTocItem(pageElem.Url, pageElem.Heading, pageElem.Level);
-        AddElem(tocElem);
-
-        if (pageElem.Level > splitLevel)
-        {
-            foreach (var t in pageElem.Children)
-            {
-                AddElem(new EpubTocItem(pageElem.Url, t.Heading, pageElem.Level + 1));
-            }
-        }
-        else if (pageElem.Level <= splitLevel)
-        {
-            foreach (var elem in pageElem.Children)
-            {
-                AddElemFromPageElem(elem, splitLevel);
-            }
-        }
-    }
-
     public override string ToString()
     {
         var sb = new StringBuilder();
 
-        for (var n = 0; n < ElemList.Count; n++)
+        for (var n = 0; n < Toc.Count; n++)
         {
-            var elem = ElemList[n];
-            var indent = (n == ElemList.Count - 1) ? "    " : "\u2502   ";
+            var elem = Toc[n];
+            var indent = (n == Toc.Count - 1) ? "    " : "\u2502   ";
 
             sb.Append(elem.Title + Environment.NewLine);
 

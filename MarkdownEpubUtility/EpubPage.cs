@@ -6,7 +6,7 @@ public class EpubPage
 {
     public readonly List<EpubPageItem> ElemList = [];
 
-    public void AddPage(EpubPageItem pageElement, int limitLevel)
+    public void Add(EpubPageItem pageElement, int limitLevel)
     {
         if (ElemList.Count == 0)
         {
@@ -19,7 +19,7 @@ public class EpubPage
         }
         else if (pageElement.Level > 1)
         {
-            ElemList.Last().AddChildPage(pageElement, limitLevel);
+            ElemList.Last().Add(pageElement, limitLevel);
         }
     }
 

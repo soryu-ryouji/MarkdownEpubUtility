@@ -22,17 +22,7 @@ public class EpubTocItem(string url, string title, int level = 1)
         }
     }
 
-    public void AddChild(EpubTocItem tocElement)
-    {
-        if (tocElement.Level <= this.Level)
-        {
-            tocElement.UpLevel(this.Level + 1);
-        }
-
-        Children.Add(tocElement);
-    }
-
-    public void AddElem(EpubTocItem tocElement)
+    public void Add(EpubTocItem tocElement)
     {
         if (Children.Count == 0)
         {
@@ -44,7 +34,7 @@ public class EpubTocItem(string url, string title, int level = 1)
         }
         else if (tocElement.Level > Children.Last().Level)
         {
-            Children.Last().AddElem(tocElement);
+            Children.Last().Add(tocElement);
         }
     }
 

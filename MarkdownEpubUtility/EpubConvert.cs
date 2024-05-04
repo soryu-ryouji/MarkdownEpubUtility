@@ -64,7 +64,7 @@ class EpubConvert
     public static string GenerateToc(EpubPage htmlPages, int splitLevel)
     {
         var toc = new EpubToc();
-        toc.GenerateTocFromPageList(htmlPages, splitLevel);
+        toc.GenerateFromPage(htmlPages, splitLevel);
 
         string result = RemoveExtraBlankLines(
             $"""
@@ -175,7 +175,7 @@ class EpubConvert
                 var page = new EpubPageItem("", level: level, heading: GetHeadingText(line));
                 curPage = page;
 
-                pageList.AddPage(page, splitLevel);
+                pageList.Add(page, splitLevel);
             }
 
             if (level > splitLevel)

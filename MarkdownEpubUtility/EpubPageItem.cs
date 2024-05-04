@@ -10,7 +10,7 @@ public class EpubPageItem(string url, int level, string heading)
     public readonly List<string> Content = [];
     public readonly List<EpubPageItem> Children = [];
 
-    public void AddChildPage(EpubPageItem newPageElement, int limitLevel)
+    public void Add(EpubPageItem newPageElement, int limitLevel)
     {
         if (Children.Count == 0)
         {
@@ -34,7 +34,7 @@ public class EpubPageItem(string url, int level, string heading)
             // If the level of the new page is greater than that of the current page's children
             // the AddPageElem method of the last element of the current page's ChildrenPage is called,
             // and the page is automatically inserted into the appropriate position.
-            Children.Last().AddChildPage(newPageElement, limitLevel);
+            Children.Last().Add(newPageElement, limitLevel);
         }
     }
 
