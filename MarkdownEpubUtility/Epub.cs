@@ -22,8 +22,8 @@ public class Epub
     {
         EpubConvert.ConvertMdAbsolutePath(BuildData.MdLines, BuildData.MdPath, Content);
 
-        var pages = EpubConvert.ToHtmlPages(BuildData.MdLines, BuildData.SplitLevel);
-        Content.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, BuildData.SplitLevel));
+        var pages = EpubConvert.MdToEpubPage(BuildData.MdLines, BuildData.SplitLevel);
+        Content.AddRange(EpubConvert.PageToContent(pages, BuildData.SplitLevel));
 
         if (BuildData.CoverPath != "") Content.AddImage("cover", BuildData.CoverPath);
 

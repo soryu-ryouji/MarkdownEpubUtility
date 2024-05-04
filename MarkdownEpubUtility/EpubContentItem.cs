@@ -43,16 +43,16 @@ public class EpubContentItem(EpubContentType type, string fileName, string conte
                 {
                     return Encoding.UTF8.GetBytes(
                     $"""
-                <?xml version='1.0' encoding='utf-8'?>
-                <html xmlns='http://www.w3.org/1999/xhtml'>
-                <head><title></title>
-                <link href='../Styles/stylesheet.css' rel='stylesheet' type='text/css'/>
-                </head>
-                <body>
-                {Content}
-                </body>
-                </html>
-                """);
+                    <?xml version='1.0' encoding='utf-8'?>
+                    <html xmlns='http://www.w3.org/1999/xhtml'>
+                    <head><title></title>
+                    <link href='../Styles/stylesheet.css' rel='stylesheet' type='text/css'/>
+                    </head>
+                    <body>
+                    {Content}
+                    </body>
+                    </html>
+                    """);
                 }
             case EpubContentType.Mimetype:
             case EpubContentType.Container:

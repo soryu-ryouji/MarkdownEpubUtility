@@ -17,7 +17,7 @@ class EpubConvert
     }
 
     # region Convert Html To List<EpubContent>
-    public static List<EpubContentItem> HtmlPagesToEpubContentList(EpubPage htmlPages, int splitLevel)
+    public static List<EpubContentItem> PageToContent(EpubPage htmlPages, int splitLevel)
     {
         var contents = new List<EpubContentItem>();
 
@@ -91,7 +91,7 @@ class EpubConvert
     public static string GenerateOpf(EpubContent epubContents, EpubMetadata epubMetadata)
     {
         var coverMetadata = "";
-        if (epubContents.SearchContent("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
+        if (epubContents.Search("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
 
         string opf = RemoveExtraBlankLines(
                 $"""
@@ -99,7 +99,7 @@ class EpubConvert
                 <package xmlns = "http://www.idpf.org/2007/opf" unique-identifier = "uuid_id" version = "2.0">
                 <metadata xmlns:dc = "https://purl.org/dc/elements/1.1/">
                 {coverMetadata}
-                {epubMetadata.GenerateOpfMetadata()}
+                {epubMetadata.ToOpf()}
                 </metadata>
                 <manifest>
                 {GenerateOpfManifest(epubContents)}
@@ -147,7 +147,7 @@ class EpubConvert
     /// By default, users will follow the standard and start their posts with a # at the very beginning.
     /// (default split level is 1)
     /// </summary>
-    public static EpubPage ToHtmlPages(List<string> mdLines, int splitLevel)
+    public static EpubPage MdToEpubPage(List<string> mdLines, int splitLevel)
     {
         // First read the first line of the markdownList
         // if the first line is not a title, it will report an error and exit.

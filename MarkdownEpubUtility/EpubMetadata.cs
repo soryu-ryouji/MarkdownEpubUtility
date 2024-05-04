@@ -13,7 +13,7 @@ public class EpubMetadata
     public string ModifiedDate = "";
     public string Uuid = "";
 
-    public string GenerateOpfMetadata()
+    public string ToOpf()
     {
         var metadataList = new List<string>
         {
