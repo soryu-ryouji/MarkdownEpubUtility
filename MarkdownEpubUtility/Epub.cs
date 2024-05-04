@@ -26,7 +26,7 @@ public class Epub
                 </rootfiles>
             </container>
             """));
-        Contents.Add(new (EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
+        Contents.Add(new(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
     }
 
     private void GenerateContent()
@@ -37,9 +37,11 @@ public class Epub
         Contents.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, BuildData.SplitLevel));
 
         if (BuildData.CoverPath != "") Contents.AddImage("cover", BuildData.CoverPath);
-        // Tips: Toc文件需要在opf文件生成前生成，否则不会被添加进列表中
-        Contents.Add(new (EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
-        Contents.Add(new (EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Contents, EpubData)));
+
+        // Toc needs to be generated before the opf file is generated
+        // otherwise it won't be added to the list
+        Contents.Add(new(EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
+        Contents.Add(new(EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Contents, EpubData)));
     }
 
     public ZipFile CreateEpub()

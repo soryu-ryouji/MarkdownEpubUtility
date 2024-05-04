@@ -14,23 +14,26 @@ public class PageElem(string url, int level, string heading)
     {
         if (Children.Count == 0)
         {
-            // 如果当前页面的ChildrenPage一个元素都没有，则默认将第一个元素设置为其子元素，并将其等级重置为 当前页面等级+1
+            // If there is no element in the current page's ChildrenPage
+            // the first element is set as its child by default, and its level is reset to the current page level +1.
             newPageElement.Level = Level + 1;
             Children.Add(newPageElement);
         }
         else if (Level == limitLevel)
         {
-            // 如果当前已经到了 limit level，则将所有新增页面停留在当前页面
+            // If the current limit level has been reached, all new pages will stay on the current page.
             Children.Add(newPageElement);
         }
         else if (Level + 1 == newPageElement.Level)
         {
-            // 如果新增的页面的等级为当前页面的子页面，则将其加入到ChildrenPage
+            // If the level of the added page is a child of the current page, add it to the ChildrenPage
             Children.Add(newPageElement);
         }
         else if (Level + 1 < newPageElement.Level)
         {
-            // 如果新增页面的等级明显大于当前页面的子页面，则调用当前页面ChildrenPage最末尾元素的AddPageElem方法，自动插入到合适位置
+            // If the level of the new page is greater than that of the current page's children
+            // the AddPageElem method of the last element of the current page's ChildrenPage is called,
+            // and the page is automatically inserted into the appropriate position.
             Children.Last().AddElem(newPageElement, limitLevel);
         }
     }

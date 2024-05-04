@@ -8,11 +8,10 @@ class EpubConvert
 
     public static string RemoveExtraBlankLines(string input)
     {
-        // 使用正则表达式替换多余的空行
-        string pattern = @"^\s*$\n|\r";
-        string replacement = "";
-        Regex regex = new Regex(pattern, RegexOptions.Multiline);
-        string result = regex.Replace(input, replacement);
+        var pattern = @"^\s*$\n|\r";
+        var replacement = "";
+        var regex = new Regex(pattern, RegexOptions.Multiline);
+        var result = regex.Replace(input, replacement);
 
         return result;
     }
@@ -37,10 +36,11 @@ class EpubConvert
         contents.Add(epubContent);
         chapterNum++;
 
-        // 若 pageElem.ChildrenPage 的子节点数量为 0 ，则直接忽略 splitLevel
+        // If pageElem.ChildrenPage has 0 children, splitLevel is ignored.
         if (pageElem.Children.Count != 0)
         {
-            // 当 splitLevel 大于 pageElem.Level 时，说明当前 pageElem 的子节点还可以继续细分为更小的 EpubContent
+            // When splitLevel is greater than pageElem.Level
+            // it means that the children of the current pageElem can be further subdivided into smaller EpubContents.
             if (splitLevel > pageElem.Level)
             {
                 foreach (var subPage in pageElem.Children)
@@ -50,8 +50,8 @@ class EpubConvert
             }
             else
             {
-                // 当 splitLevel 等于 pageElem.Level时
-                // 将当前 pageElem 下所有子元素的 Content 添加到 pageElem 中
+                // When splitLevel is equal to pageElem.Level,
+                // Add the Content of all children of the current pageElem to the pageElem.
                 contents.Last().Content = PageElem.Render(pageElem);
             }
         }
@@ -111,7 +111,6 @@ class EpubConvert
                 """);
 
         return opf;
-        
     }
 
     public static string GenerateOpfManifest(EpubContents epubContents)
@@ -126,9 +125,9 @@ class EpubConvert
 
     #endregion
 
-    # region Markdown To Html
+    #region Markdown To Html
 
-        public static string Md2Html(string markdown)
+    public static string Md2Html(string markdown)
     {
         var pipeline = new MarkdownPipelineBuilder().UseEmphasisExtras().UsePipeTables().Build();
 
@@ -144,23 +143,27 @@ class EpubConvert
     }
 
     /// <summary>
-    /// 根据 split level 将 markdown 文档拆分成一个或多个特定页面
-    /// 默认用户会遵守规范，在文章的最开头会以#作为开始符
-    /// （默认 split level 为 1）
+    /// Splits a markdown document into one or more specific pages based on split level.
+    /// By default, users will follow the standard and start their posts with a # at the very beginning.
+    /// (default split level is 1)
     /// </summary>
     public static HtmlPages ToHtmlPages(List<string> mdLines, int splitLevel)
     {
-        // 首先会读取 markdownList 的第一行，若第一行不为标题，则直接报错退出
-        // 使用 AddPageElem 添加到 PageElem 到 PageList 中时，AddPageElem 会自动将段落排序到合适的位置
-        // 当到达 split level 的等级时，所有的大于 split level 的页面，都会被添加其父 Page 的 ChildrenPage 列表中
+        // First read the first line of the markdownList
+        // if the first line is not a title, it will report an error and exit.
+
+        // When adding a PageElem to a PageList using AddPageElem
+        // AddPageElem automatically sorts the paragraphs into the appropriate position.
+
+        // When the split level is reached
+        // All pages larger than the split level will be added to the parent's ChildrenPage list.
 
         var pageList = new HtmlPages();
-        // 第一行必须是标题，如果不是，则直接报错退出
         if (GetHeadingLevel(mdLines[0]) == 0) throw new Exception("First line of Markdown must have a heading");
 
         var chapterIndex = 0;
         var subChapterIndex = 0;
-        var curPage = new PageElem("",1,"");
+        var curPage = new PageElem("", 1, "");
 
         foreach (var line in mdLines)
         {

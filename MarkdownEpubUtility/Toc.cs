@@ -10,26 +10,23 @@ public class Toc
     public readonly List<TocElem> ElemList = [];
 
     /// <summary>
-    /// 将元素添加到所有子元素的最后
-    /// 如果该元素比最后的元素的Level小，则将其与最后的元素的子元素的Level进行比较。
-    /// 如果等级相同，或者是大于末尾的元素，则将其放在该元素的后面
+    /// Add the element to the end of all child elements
+    /// If the element is smaller than the Level of the last element, compare it to the Levels of the children of the last element.
+    /// If the level is the same, or if it is greater than the end element, put it after that element
     /// </summary>
     public void AddElem(TocElem tocElem)
     {
-        // 如果当前 _elements 列表为零时，将元素直接添加到 _elements 列表中
         if (ElemList.Count == 0)
         {
             tocElem.Level = 1;
             ElemList.Add(tocElem);
         }
-        // 如果当前tocElement的Level为1，则将其添加到tocElemList中
         else if (tocElem.Level == 1) ElemList.Add(tocElem);
-        // 如果当前 _elements 元素不为空，则将其添加到当前 _elements 列表最末尾的元素中
         else ElemList.Last().AddElem(tocElem);
     }
 
     /// <summary>
-    /// 渲染 Toc 元素当前的目录
+    /// Renders the current catelog of the Toc element
     /// </summary>
     public string Render()
     {
@@ -45,7 +42,7 @@ public class Toc
     }
 
     /// <summary>
-    /// 使用 PageList 生成 Toc
+    /// Generating a Toc with PageList
     /// </summary>
     public void GenerateTocFromPageList(HtmlPages htmlPages, int splitLevel)
     {
@@ -56,14 +53,13 @@ public class Toc
     }
 
     /// <summary>
-    /// 使用 PageElem 向 Toc 中添加 TocElem
+    /// Adding a TocElem to a Toc using a PageElem
     /// </summary>
     private void AddElemFromPageElem(PageElem pageElem, int splitLevel)
     {
         var tocElem = new TocElem(pageElem.Url, pageElem.Heading, pageElem.Level);
         AddElem(tocElem);
 
-        // 这里判断子元素是否需要继续递归
         if (pageElem.Level > splitLevel)
         {
             foreach (var t in pageElem.Children)
