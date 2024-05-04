@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public enum EpubContentType
 {
@@ -46,14 +46,14 @@ public class EpubContent(EpubContentType type, string fileName, string content)
         switch (Type)
         {
             case EpubContentType.Image:
-            {
-                // When Type is Image, Content is a string of the image path
-                return File.ReadAllBytes(Content);
-            }
+                {
+                    // When Type is Image, Content is a string of the image path
+                    return File.ReadAllBytes(Content);
+                }
             case EpubContentType.Html:
-            {
-                return Encoding.UTF8.GetBytes(
-                $"""
+                {
+                    return Encoding.UTF8.GetBytes(
+                    $"""
                 <?xml version='1.0' encoding='utf-8'?>
                 <html xmlns='http://www.w3.org/1999/xhtml'>
                 <head><title></title>
@@ -64,15 +64,15 @@ public class EpubContent(EpubContentType type, string fileName, string content)
                 </body>
                 </html>
                 """);
-            }
+                }
             case EpubContentType.Mimetype:
             case EpubContentType.Container:
             case EpubContentType.Css:
             case EpubContentType.Ncx:
             case EpubContentType.Opf:
-            {
-                return Encoding.UTF8.GetBytes(Content);
-            }
+                {
+                    return Encoding.UTF8.GetBytes(Content);
+                }
 
             default: throw new InvalidOperationException($"Cannot get data from {Type}");
         }

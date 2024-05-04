@@ -1,6 +1,6 @@
 using Xunit.Abstractions;
 
-namespace EpubBuilderLib.Test;
+namespace MarkdownEpubUtility.Test;
 
 public class TocTest
 {
@@ -39,6 +39,6 @@ public class TocTest
 
             """;
 
-        Assert.Equal(tree,resultStr);
+        Assert.Equal(tree, resultStr);
     }
 }

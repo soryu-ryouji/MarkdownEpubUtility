@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class PageElem(string url, int level, string heading)
 {

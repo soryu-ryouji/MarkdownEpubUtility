@@ -1,7 +1,6 @@
-﻿using EpubBuilder;
-using System.CommandLine;
+﻿using System.CommandLine;
 
-namespace EpubBuilderCLI;
+namespace MarkdownEpubUtility.CLI;
 
 class Program
 {
@@ -16,6 +15,7 @@ class Program
         public string Uuid;
         public int SplitLevel;
     }
+
     public static void Main(string[] args)
     {
         ParseArgs(args);
@@ -25,7 +25,7 @@ class Program
     {
         var rootCommand = new RootCommand();
 
-        var mdOption =  new Option<string?>(aliases: ["-m", "--markdown"], description: "Markdown Path") { IsRequired = true };
+        var mdOption = new Option<string?>(aliases: ["-m", "--markdown"], description: "Markdown Path") { IsRequired = true };
         var coverOption = new Option<string?>(aliases: ["-c", "--cover"], description: "Cover Path");
         var buildOption = new Option<string?>(aliases: ["-b", "--build"], description: "Build Path");
         var languageOption = new Option<string?>(aliases: ["-l", "--language"], description: "Epub Language");
@@ -63,7 +63,7 @@ class Program
             var (epubMetadata, buildMetadata, buildPath) = HandleCommandLine(buildCommandArgs);
             BuildEpub(epubMetadata, buildMetadata, buildPath);
 
-        },mdOption, coverOption, buildOption, languageOption, titleOption, authorOption, uuidOption, splitOption);
+        }, mdOption, coverOption, buildOption, languageOption, titleOption, authorOption, uuidOption, splitOption);
 
         rootCommand.AddCommand(buildCommand);
         rootCommand.Invoke(args);
@@ -79,7 +79,6 @@ class Program
     {
         var epubMetadata = new EpubMetadata
         {
-            
             Title = string.IsNullOrWhiteSpace(args.Title) ? Path.GetFileNameWithoutExtension(args.MdPath) : args.Title,
             Author = string.IsNullOrWhiteSpace(args.Author) ? "EpubBuilder" : args.Author,
             Language = string.IsNullOrWhiteSpace(args.Language) ? "zh" : args.Language,

@@ -1,4 +1,4 @@
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class BuildMetadata(List<string> mdLines, string mdPath, string coverPath, int pageSplitLevel)
 {

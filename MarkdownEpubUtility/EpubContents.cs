@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Data;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
-public class EpubContents: IEnumerable<EpubContent>
+public class EpubContents : IEnumerable<EpubContent>
 {
     private List<EpubContent> _contents = [];
 

@@ -1,4 +1,4 @@
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class EpubMetadata
 {

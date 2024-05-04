@@ -1,7 +1,7 @@
 using Markdig;
 using System.Text.RegularExpressions;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 class EpubConvert
 {

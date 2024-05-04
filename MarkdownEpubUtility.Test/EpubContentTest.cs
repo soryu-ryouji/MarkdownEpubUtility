@@ -1,4 +1,4 @@
-namespace EpubBuilderLib.Test;
+namespace MarkdownEpubUtility.Test;
 
 public class EpubContentTest
 {
@@ -6,9 +6,9 @@ public class EpubContentTest
     public void Test_()
     {
         // Given
-    
+
         // When
-    
+
         // Then
     }
 }

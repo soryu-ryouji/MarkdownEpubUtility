@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 /// <summary>
 /// Table of Contents
@@ -87,7 +87,7 @@ public class Toc
         for (var n = 0; n < ElemList.Count; n++)
         {
             var elem = ElemList[n];
-            var indent = (n == ElemList.Count - 1) ?  "    " : "\u2502   ";
+            var indent = (n == ElemList.Count - 1) ? "    " : "\u2502   ";
 
             sb.Append(elem.Title + Environment.NewLine);
 

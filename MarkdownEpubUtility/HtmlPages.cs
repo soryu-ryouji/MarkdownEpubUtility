@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class HtmlPages
 {
@@ -33,7 +33,7 @@ public class HtmlPages
         for (var i = 0; i < ElemList.Count; i++)
         {
             var elem = ElemList[i];
-            var indent = (i == ElemList.Count - 1) ?  "    " : "\u2502   ";
+            var indent = (i == ElemList.Count - 1) ? "    " : "\u2502   ";
 
             sb.Append(elem.Heading + Environment.NewLine);
 

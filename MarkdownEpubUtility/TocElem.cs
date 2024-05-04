@@ -1,4 +1,4 @@
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class TocElem(string url, string title, int level = 1)
 {

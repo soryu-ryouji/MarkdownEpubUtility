@@ -2,7 +2,7 @@
 using Ionic.Zlib;
 using Ionic.Zip;
 
-namespace EpubBuilder;
+namespace MarkdownEpubUtility;
 
 public class Epub
 {
