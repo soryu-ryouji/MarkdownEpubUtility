@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EpubBuilder\EpubBuilder.csproj" />
+    <ProjectReference Include="..\MarkdownEpubUtility\MarkdownEpubUtility.csproj" />
   </ItemGroup>
 
 </Project>
