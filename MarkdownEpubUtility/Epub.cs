@@ -15,18 +15,7 @@ public class Epub
         this.EpubData = epubData;
         this.BuildData = buildData;
 
-        // Init Contents
-        Contents.Add(new EpubContent(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
-        Contents.Add(new EpubContent(EpubContentType.Container, "container.xml",
-            """
-            <?xml version="1.0"?>
-            <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
-                <rootfiles>
-                    <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/>
-                </rootfiles>
-            </container>
-            """));
-        Contents.Add(new(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
+        Contents.Init();
     }
 
     private void GenerateContent()
