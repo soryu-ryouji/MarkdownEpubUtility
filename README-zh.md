@@ -1,8 +1,8 @@
-![logo](./docs/images/logo.png)
+![logo](./docs/images/logo-with-title-light.png)
 
-# Epub Builder
+## Markdown Epub Utility
 
-Epub Builder 是一个将 Markdown 文档转换为 Epub 电子书的跨平台的库。
+Markdown Epub Utility 是一个将 Markdown 文档转换为 Epub 电子书的跨平台的库。
 
 通过 `SplitLevel` 参数，可以实现电子书内容的分割显示，避免了所有内容挤在一张 `html`中造成了加载迟缓。
 
@@ -27,8 +27,7 @@ var epub = new Epub(epubMetadata, buildMetadata);
 epub.CreateEpub().Save(buildPath);
 ```
 
-
-# EpubBuilder CLI
+## Markdown Epub Utility CLI
 
 | short name | long name    | description               |
 | ---------- | ------------ | ------------------------- |
@@ -41,20 +40,17 @@ epub.CreateEpub().Save(buildPath);
 | `-u`       | `--uuid`     | epub 唯一标识符           |
 | `-s`       | `--split`    | 页文件分割等级            |
 
-
 **Example**
 
 ```shell
 eb build -m E:\天之炽\天之炽.md -c E:\天之炽\cover.jpg -b E:\天之炽\天之炽.epub -s 2
 ```
 
-
 # Docs
 
 [Epub 电子书格式介绍](./docs/Epub电子书格式.md)
 
 [EpubBuilder执行流程](./docs//EpubBuilder执行流程.md)
-
 
 # LICENSE
 

@@ -1,10 +1,10 @@
-![logo](./docs//images/logo.png)
+![logo](./docs/images/logo-with-title-light.png)
 
-# Epub Builder
+## Markdown Epub Utility
 
 [简体中文](./README-zh.md)
 
-Epub Builder is a cross platform library that converts Markdown documents into Epub e-books.
+Markdown Epub Utility is a cross platform library that converts Markdown documents into Epub e-books.
 
 By using the 'SplitLevel' parameter, it is possible to achieve the segmentation and display of e-book content, avoiding loading delays caused by all content being squeezed into one 'HTML'.
 
@@ -28,7 +28,11 @@ var epub = new Epub(epubMetadata, buildMetadata);
 epub.CreateEpub().Save(buildPath);
 ```
 
-# Epub Builder CLI
+### To do List
+
+- [ ] Extract Markdown from Epub.
+
+## Markdown Epub Utility CLI
 
 | short name | long name    | description                          |
 | ---------- | ------------ | ------------------------------------ |
@@ -40,7 +44,6 @@ epub.CreateEpub().Save(buildPath);
 | `-a`       | `--author`   | Author's name                        |
 | `-u`       | `--uuid`     | Unique identifier for the EPUB       |
 | `-s`       | `--split`    | Level of page file splitting         |
-
 
 **Example**
 
