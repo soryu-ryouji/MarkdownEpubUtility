@@ -8,35 +8,33 @@ public class Epub
 {
     public EpubMetadata EpubData;
     public BuildMetadata BuildData;
-    public EpubContents Contents = [];
+    public EpubContent Content = [];
 
     public Epub(EpubMetadata epubData, BuildMetadata buildData)
     {
         this.EpubData = epubData;
         this.BuildData = buildData;
 
-        Contents.Init();
+        Content.Init();
     }
 
     private void GenerateContent()
     {
-        EpubConvert.ConvertMdAbsolutePath(BuildData.MdLines, BuildData.MdPath, Contents);
+        EpubConvert.ConvertMdAbsolutePath(BuildData.MdLines, BuildData.MdPath, Content);
 
         var pages = EpubConvert.ToHtmlPages(BuildData.MdLines, BuildData.SplitLevel);
-        Contents.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, BuildData.SplitLevel));
+        Content.AddRange(EpubConvert.HtmlPagesToEpubContentList(pages, BuildData.SplitLevel));
 
-        if (BuildData.CoverPath != "") Contents.AddImage("cover", BuildData.CoverPath);
+        if (BuildData.CoverPath != "") Content.AddImage("cover", BuildData.CoverPath);
 
         // Toc needs to be generated before the opf file is generated
         // otherwise it won't be added to the list
-        Contents.Add(new(EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
-        Contents.Add(new(EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Contents, EpubData)));
+        Content.Add(new(EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
+        Content.Add(new(EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Content, EpubData)));
     }
 
-    public ZipFile CreateEpub()
+    private ZipFile PackContent()
     {
-        GenerateContent();
-
         var zip = new ZipFile(Encoding.UTF8)
         {
             CompressionLevel = CompressionLevel.Level0,
@@ -49,21 +47,28 @@ public class Epub
         zip.AddDirectoryByName("OEBPS/Image");
         zip.AddDirectoryByName("OEBPS/Styles");
 
-        foreach (var content in Contents)
+        foreach (var item in Content)
         {
-            switch (content.Type)
+            switch (item.Type)
             {
-                case EpubContentType.Mimetype: zip.AddEntry($"{content.FileName}", content.GetData()); break;
-                case EpubContentType.Container: zip.AddEntry($"META-INF/{content.FileName}", content.GetData()); break;
-                case EpubContentType.Image: zip.AddEntry($"OEBPS/Image/{content.FileName}", content.GetData()); break;
-                case EpubContentType.Css: zip.AddEntry($"OEBPS/Styles/{content.FileName}", content.GetData()); break;
-                case EpubContentType.Html: zip.AddEntry($"OEBPS/Text/{content.FileName}", content.GetData()); break;
-                case EpubContentType.Opf: zip.AddEntry($"OEBPS/{content.FileName}", content.GetData()); break;
-                case EpubContentType.Ncx: zip.AddEntry($"OEBPS/{content.FileName}", content.GetData()); break;
-                default: throw new ArgumentOutOfRangeException($"{content.Type} cannot be added to epub zip");
+                case EpubContentType.Mimetype: zip.AddEntry($"{item.FileName}", item.GetData()); break;
+                case EpubContentType.Container: zip.AddEntry($"META-INF/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Image: zip.AddEntry($"OEBPS/Image/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Css: zip.AddEntry($"OEBPS/Styles/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Html: zip.AddEntry($"OEBPS/Text/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Opf: zip.AddEntry($"OEBPS/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Ncx: zip.AddEntry($"OEBPS/{item.FileName}", item.GetData()); break;
+                default: throw new ArgumentOutOfRangeException($"{item.Type} cannot be added to epub zip");
             }
         }
 
         return zip;
+    }
+
+    public ZipFile CreateEpub()
+    {
+        GenerateContent();
+        var epubFile = PackContent();
+        return epubFile;
     }
 }

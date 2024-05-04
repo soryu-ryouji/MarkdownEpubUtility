@@ -2,15 +2,15 @@
 
 namespace MarkdownEpubUtility;
 
-public class PageElem(string url, int level, string heading)
+public class EpubPageItem(string url, int level, string heading)
 {
     public int Level = level;
     public string Url = url;
     public readonly string Heading = heading;
     public readonly List<string> Content = [];
-    public readonly List<PageElem> Children = [];
+    public readonly List<EpubPageItem> Children = [];
 
-    public void AddElem(PageElem newPageElement, int limitLevel)
+    public void AddChildPage(EpubPageItem newPageElement, int limitLevel)
     {
         if (Children.Count == 0)
         {
@@ -34,11 +34,11 @@ public class PageElem(string url, int level, string heading)
             // If the level of the new page is greater than that of the current page's children
             // the AddPageElem method of the last element of the current page's ChildrenPage is called,
             // and the page is automatically inserted into the appropriate position.
-            Children.Last().AddElem(newPageElement, limitLevel);
+            Children.Last().AddChildPage(newPageElement, limitLevel);
         }
     }
 
-    public static string Render(PageElem pageElem)
+    public static string Render(EpubPageItem pageElem)
     {
         var sb = new StringBuilder();
         sb.Append(EpubConvert.Md2Html(string.Join("\n", pageElem.Content)));

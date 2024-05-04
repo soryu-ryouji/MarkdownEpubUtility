@@ -17,9 +17,9 @@ class EpubConvert
     }
 
     # region Convert Html To List<EpubContent>
-    public static List<EpubContent> HtmlPagesToEpubContentList(HtmlPages htmlPages, int splitLevel)
+    public static List<EpubContentItem> HtmlPagesToEpubContentList(EpubPage htmlPages, int splitLevel)
     {
-        var contents = new List<EpubContent>();
+        var contents = new List<EpubContentItem>();
 
         int chapterNum = 0;
         foreach (var subPage in htmlPages.ElemList)
@@ -30,9 +30,9 @@ class EpubConvert
         return contents;
     }
 
-    private static int ExtractHtmlSubPage(PageElem pageElem, int chapterNum, int splitLevel, List<EpubContent> contents)
+    private static int ExtractHtmlSubPage(EpubPageItem pageElem, int chapterNum, int splitLevel, List<EpubContentItem> contents)
     {
-        var epubContent = new EpubContent(EpubContentType.Html, $"chapter_{chapterNum}.xhtml", Md2Html(pageElem.Content));
+        var epubContent = new EpubContentItem(EpubContentType.Html, $"chapter_{chapterNum}.xhtml", Md2Html(pageElem.Content));
         contents.Add(epubContent);
         chapterNum++;
 
@@ -52,7 +52,7 @@ class EpubConvert
             {
                 // When splitLevel is equal to pageElem.Level,
                 // Add the Content of all children of the current pageElem to the pageElem.
-                contents.Last().Content = PageElem.Render(pageElem);
+                contents.Last().Content = EpubPageItem.Render(pageElem);
             }
         }
 
@@ -61,9 +61,9 @@ class EpubConvert
     # endregion
 
     # region Pages To Toc
-    public static string GenerateToc(HtmlPages htmlPages, int splitLevel)
+    public static string GenerateToc(EpubPage htmlPages, int splitLevel)
     {
-        var toc = new Toc();
+        var toc = new EpubToc();
         toc.GenerateTocFromPageList(htmlPages, splitLevel);
 
         string result = RemoveExtraBlankLines(
@@ -88,7 +88,7 @@ class EpubConvert
 
     #region Opf
 
-    public static string GenerateOpf(EpubContents epubContents, EpubMetadata epubMetadata)
+    public static string GenerateOpf(EpubContent epubContents, EpubMetadata epubMetadata)
     {
         var coverMetadata = "";
         if (epubContents.SearchContent("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
@@ -113,12 +113,12 @@ class EpubConvert
         return opf;
     }
 
-    public static string GenerateOpfManifest(EpubContents epubContents)
+    public static string GenerateOpfManifest(EpubContent epubContents)
     {
         return string.Join(Environment.NewLine, epubContents.Select(content => content.ManifestItem));
     }
 
-    public static string GenerateOpfSpine(EpubContents epubContents)
+    public static string GenerateOpfSpine(EpubContent epubContents)
     {
         return string.Join(Environment.NewLine, epubContents.Select(content => content.SpineItem));
     }
@@ -147,7 +147,7 @@ class EpubConvert
     /// By default, users will follow the standard and start their posts with a # at the very beginning.
     /// (default split level is 1)
     /// </summary>
-    public static HtmlPages ToHtmlPages(List<string> mdLines, int splitLevel)
+    public static EpubPage ToHtmlPages(List<string> mdLines, int splitLevel)
     {
         // First read the first line of the markdownList
         // if the first line is not a title, it will report an error and exit.
@@ -158,12 +158,12 @@ class EpubConvert
         // When the split level is reached
         // All pages larger than the split level will be added to the parent's ChildrenPage list.
 
-        var pageList = new HtmlPages();
+        var pageList = new EpubPage();
         if (GetHeadingLevel(mdLines[0]) == 0) throw new Exception("First line of Markdown must have a heading");
 
         var chapterIndex = 0;
         var subChapterIndex = 0;
-        var curPage = new PageElem("", 1, "");
+        var curPage = new EpubPageItem("", 1, "");
 
         foreach (var line in mdLines)
         {
@@ -172,10 +172,10 @@ class EpubConvert
             var level = GetHeadingLevel(line);
             if (level != 0)
             {
-                var page = new PageElem("", level: level, heading: GetHeadingText(line));
+                var page = new EpubPageItem("", level: level, heading: GetHeadingText(line));
                 curPage = page;
 
-                pageList.AddElem(page, splitLevel);
+                pageList.AddPage(page, splitLevel);
             }
 
             if (level > splitLevel)
@@ -235,12 +235,12 @@ class EpubConvert
 
 
     # region Markdown Image Path To Absolute Path
-    public static void ConvertMdAbsolutePath(List<string> lines, string mdFilePath, EpubContents epubContents)
+    public static void ConvertMdAbsolutePath(List<string> lines, string mdFilePath, EpubContent epubContents)
     {
         ConvertMdImagePath(lines, mdFilePath, epubContents);
     }
 
-    public static void ConvertMdImagePath(List<string> lines, string mdPath, EpubContents epubContents)
+    public static void ConvertMdImagePath(List<string> lines, string mdPath, EpubContent epubContents)
     {
         string pattern = @"!\[(.*?)\]\((.*?)\)";
         var regex = new Regex(pattern);

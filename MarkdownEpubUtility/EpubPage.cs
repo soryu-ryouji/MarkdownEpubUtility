@@ -2,11 +2,11 @@
 
 namespace MarkdownEpubUtility;
 
-public class HtmlPages
+public class EpubPage
 {
-    public readonly List<PageElem> ElemList = [];
+    public readonly List<EpubPageItem> ElemList = [];
 
-    public void AddElem(PageElem pageElement, int limitLevel)
+    public void AddPage(EpubPageItem pageElement, int limitLevel)
     {
         if (ElemList.Count == 0)
         {
@@ -22,7 +22,7 @@ public class HtmlPages
         else if (pageElement.Level > 1)
         {
             // 如果待添加页面的等级大于2，则将其添加到当前子元素的最末尾元素中，使用AddPageElem进行自动插入
-            ElemList.Last().AddElem(pageElement, limitLevel);
+            ElemList.Last().AddChildPage(pageElement, limitLevel);
         }
     }
 
@@ -47,7 +47,7 @@ public class HtmlPages
         return sb.ToString();
     }
 
-    private void PrintTree(PageElem elem, string indent, bool isLast, StringBuilder sb)
+    private void PrintTree(EpubPageItem elem, string indent, bool isLast, StringBuilder sb)
     {
         string curLine;
         if (isLast)

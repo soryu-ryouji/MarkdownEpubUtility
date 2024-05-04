@@ -1,8 +1,8 @@
 namespace MarkdownEpubUtility;
 
-public class TocElem(string url, string title, int level = 1)
+public class EpubTocItem(string url, string title, int level = 1)
 {
-    public readonly List<TocElem> Children = [];
+    public readonly List<EpubTocItem> Children = [];
     public int Level { get; set; } = level;
     private string Url { get; } = url;
     public string Title { get; } = title;
@@ -22,7 +22,7 @@ public class TocElem(string url, string title, int level = 1)
         }
     }
 
-    public void AddChild(TocElem tocElement)
+    public void AddChild(EpubTocItem tocElement)
     {
         if (tocElement.Level <= this.Level)
         {
@@ -32,7 +32,7 @@ public class TocElem(string url, string title, int level = 1)
         Children.Add(tocElement);
     }
 
-    public void AddElem(TocElem tocElement)
+    public void AddElem(EpubTocItem tocElement)
     {
         if (Children.Count == 0)
         {

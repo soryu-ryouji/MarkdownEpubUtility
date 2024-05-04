@@ -5,16 +5,16 @@ namespace MarkdownEpubUtility;
 /// <summary>
 /// Table of Contents
 /// </summary>
-public class Toc
+public class EpubToc
 {
-    public readonly List<TocElem> ElemList = [];
+    public readonly List<EpubTocItem> ElemList = [];
 
     /// <summary>
     /// Add the element to the end of all child elements
     /// If the element is smaller than the Level of the last element, compare it to the Levels of the children of the last element.
     /// If the level is the same, or if it is greater than the end element, put it after that element
     /// </summary>
-    public void AddElem(TocElem tocElem)
+    public void AddElem(EpubTocItem tocElem)
     {
         if (ElemList.Count == 0)
         {
@@ -44,7 +44,7 @@ public class Toc
     /// <summary>
     /// Generating a Toc with PageList
     /// </summary>
-    public void GenerateTocFromPageList(HtmlPages htmlPages, int splitLevel)
+    public void GenerateTocFromPageList(EpubPage htmlPages, int splitLevel)
     {
         foreach (var pageElem in htmlPages.ElemList)
         {
@@ -55,16 +55,16 @@ public class Toc
     /// <summary>
     /// Adding a TocElem to a Toc using a PageElem
     /// </summary>
-    private void AddElemFromPageElem(PageElem pageElem, int splitLevel)
+    private void AddElemFromPageElem(EpubPageItem pageElem, int splitLevel)
     {
-        var tocElem = new TocElem(pageElem.Url, pageElem.Heading, pageElem.Level);
+        var tocElem = new EpubTocItem(pageElem.Url, pageElem.Heading, pageElem.Level);
         AddElem(tocElem);
 
         if (pageElem.Level > splitLevel)
         {
             foreach (var t in pageElem.Children)
             {
-                AddElem(new TocElem(pageElem.Url, t.Heading, pageElem.Level + 1));
+                AddElem(new EpubTocItem(pageElem.Url, t.Heading, pageElem.Level + 1));
             }
         }
         else if (pageElem.Level <= splitLevel)
@@ -97,7 +97,7 @@ public class Toc
         return sb.ToString();
     }
 
-    private static void PrintTree(TocElem elem, string indent, bool isLast, StringBuilder sb)
+    private static void PrintTree(EpubTocItem elem, string indent, bool isLast, StringBuilder sb)
     {
         string curLine;
         if (isLast)
