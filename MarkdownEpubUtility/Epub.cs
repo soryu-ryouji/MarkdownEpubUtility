@@ -51,13 +51,13 @@ public class Epub
         {
             switch (item.Type)
             {
-                case EpubContentType.Mimetype: zip.AddEntry($"{item.FileName}", item.GetData()); break;
-                case EpubContentType.Container: zip.AddEntry($"META-INF/{item.FileName}", item.GetData()); break;
-                case EpubContentType.Image: zip.AddEntry($"OEBPS/Image/{item.FileName}", item.GetData()); break;
-                case EpubContentType.Css: zip.AddEntry($"OEBPS/Styles/{item.FileName}", item.GetData()); break;
-                case EpubContentType.Html: zip.AddEntry($"OEBPS/Text/{item.FileName}", item.GetData()); break;
-                case EpubContentType.Opf: zip.AddEntry($"OEBPS/{item.FileName}", item.GetData()); break;
-                case EpubContentType.Ncx: zip.AddEntry($"OEBPS/{item.FileName}", item.GetData()); break;
+                case EpubContentType.Mimetype: zip.AddEntry($"{item.FileName}", item.Content); break;
+                case EpubContentType.Container: zip.AddEntry($"META-INF/{item.FileName}", item.Content); break;
+                case EpubContentType.Image: zip.AddEntry($"OEBPS/Image/{item.FileName}", item.Content); break;
+                case EpubContentType.Css: zip.AddEntry($"OEBPS/Styles/{item.FileName}", item.Content); break;
+                case EpubContentType.Html: zip.AddEntry($"OEBPS/Text/{item.FileName}", item.Content); break;
+                case EpubContentType.Opf: zip.AddEntry($"OEBPS/{item.FileName}", item.Content); break;
+                case EpubContentType.Ncx: zip.AddEntry($"OEBPS/{item.FileName}", item.Content); break;
                 default: throw new ArgumentOutOfRangeException($"{item.Type} cannot be added to epub zip");
             }
         }

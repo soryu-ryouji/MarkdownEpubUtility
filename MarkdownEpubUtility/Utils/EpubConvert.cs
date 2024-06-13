@@ -1,10 +1,15 @@
 using Markdig;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MarkdownEpubUtility;
 
-class EpubConvert
+static class EpubConvert
 {
+    public static byte[] ToBytes(this string self)
+    {
+        return Encoding.UTF8.GetBytes(self);
+    }
 
     public static string RemoveExtraBlankLines(string input)
     {
@@ -52,7 +57,7 @@ class EpubConvert
             {
                 // When splitLevel is equal to pageElem.Level,
                 // Add the Content of all children of the current pageElem to the pageElem.
-                contents.Last().Content = EpubPageItem.Render(pageElem);
+                contents.Last().Content = EpubPageItem.Render(pageElem).ToBytes();
             }
         }
 

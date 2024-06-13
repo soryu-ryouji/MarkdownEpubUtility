@@ -33,7 +33,7 @@ public class EpubContent : IEnumerable<EpubContentItem>
             _ => throw new DataException("Only jpg and png images can be used")
         };
 
-        _content.Add(new EpubContentItem(contentType, $"{fileName}{fileExtension}", imagePath));
+        _content.Add(new EpubContentItem(contentType, $"{fileName}{fileExtension}", File.ReadAllBytes(imagePath)));
     }
 
     public override string ToString()

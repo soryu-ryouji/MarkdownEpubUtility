@@ -1,16 +1,24 @@
-using System.Text;
-
 namespace MarkdownEpubUtility;
 
-public class EpubContentItem(EpubContentType type, string fileName, string content)
+public class EpubContentItem
 {
-    public readonly EpubContentType Type = type;
-    public string FileName = fileName;
-    // When Type is Image, Content is a string of the image path
-    // TODO: Load image Texture into content
-    public string Content = content;
+    public EpubContentItem(EpubContentType type, string fileName, byte[] content)
+    {
+        Type = type;
+        FileName = fileName;
+        Content = content;
+    }
 
-    // Just Html Content can be created as SpineItem
+    public EpubContentItem(EpubContentType type, string fileName, string content)
+    {
+        Type = type;
+        FileName = fileName;
+        Content = content.ToBytes();
+    }
+
+    public readonly EpubContentType Type;
+    public string FileName;
+    public byte[] Content;
     public string SpineItem => Type is EpubContentType.Html ? $"""<itemref idref = "{FileName}"/>""" : string.Empty;
 
     public string ManifestItem => Type switch
@@ -22,43 +30,6 @@ public class EpubContentItem(EpubContentType type, string fileName, string conte
         EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
         _ => string.Empty
     };
-
-    public byte[] GetData()
-    {
-        switch (Type)
-        {
-            case EpubContentType.Image:
-                {
-                    // When Type is Image, Content is a string of the image path
-                    return File.ReadAllBytes(Content);
-                }
-            case EpubContentType.Html:
-                {
-                    return Encoding.UTF8.GetBytes(
-                    $"""
-                    <?xml version='1.0' encoding='utf-8'?>
-                    <html xmlns='http://www.w3.org/1999/xhtml'>
-                    <head><title></title>
-                    <link href='../Styles/stylesheet.css' rel='stylesheet' type='text/css'/>
-                    </head>
-                    <body>
-                    {Content}
-                    </body>
-                    </html>
-                    """);
-                }
-            case EpubContentType.Mimetype:
-            case EpubContentType.Container:
-            case EpubContentType.Css:
-            case EpubContentType.Ncx:
-            case EpubContentType.Opf:
-                {
-                    return Encoding.UTF8.GetBytes(Content);
-                }
-
-            default: throw new InvalidOperationException($"Cannot get data from {Type}");
-        }
-    }
 
     public override string ToString()
     {
