@@ -4,12 +4,165 @@ using System.Text.RegularExpressions;
 
 namespace MarkdownEpubUtility;
 
-static class EpubConvert
+public static class EpubConvert
 {
     public static byte[] ToBytes(this string self)
     {
         return Encoding.UTF8.GetBytes(self);
     }
+
+    # region EpubMetadata
+    public static string ToOpf(this EpubMetadata epubMetadata)
+    {
+        var metadataList = new List<string>
+        {
+            epubMetadata.Title != ""
+                ? $"<dc:title>{epubMetadata.Title}</dc:title>"
+                : "<dc:title>EpubBuilder</dc:title>",
+            epubMetadata.Author != ""
+                ? $"<dc:creator>{epubMetadata.Author}</dc:creator>"
+                : "<dc:creator>Anonymous</dc:creator>",
+            epubMetadata.Language != ""
+                ? $"<dc:language>{epubMetadata.Language}</dc:language>"
+                : "<dc:language>zh</dc:language>",
+            epubMetadata.Generator != ""
+                ? $"<dc:publisher>{epubMetadata.Generator}</dc:publisher>"
+                : "<dc:publisher>EpubBuilder</dc:publisher>"
+        };
+
+        if (epubMetadata.Description != "")
+            metadataList.Add($"<dc:description>{epubMetadata.Description}</dc:description>");
+        if (epubMetadata.License != "")
+            metadataList.Add($"<dc:rights>{epubMetadata.License}</dc:rights>");
+        if (epubMetadata.PublishedDate != "")
+            metadataList.Add($"<dc:date>{epubMetadata.PublishedDate}</dc:date>");
+        if (epubMetadata.ModifiedDate != "")
+            metadataList.Add($"<dc:date>{epubMetadata.ModifiedDate}</dc:date>");
+        if (epubMetadata.Subject != "")
+            metadataList.Add($"<dc:subject>{epubMetadata.Subject}</dc:subject>");
+        if (epubMetadata.Uuid != "")
+            metadataList.Add($"""<dc:identifier id="uuid_id" opf:scheme="uuid">{epubMetadata.Uuid}</dc:identifier>""");
+
+        return string.Join(Environment.NewLine, metadataList);
+    }
+
+    #endregion
+
+    #region EpubToc
+
+    public static string ToTree(this EpubToc self)
+    {
+        var sb = new StringBuilder();
+
+        void PrintTree(EpubTocItem elem, string indent, bool isLast)
+        {
+            sb.Append(indent + (isLast ? "└─ " : "├─ ") + elem.Title + Environment.NewLine);
+            var newIndent = indent + (isLast ? "    " : "|   ");
+
+            for (var i = 0; i < elem.Children.Count; i++)
+            {
+                PrintTree(elem.Children[i], newIndent, i == elem.Children.Count - 1);
+            }
+        }
+
+        for (var n = 0; n < self.Count; n++)
+        {
+            var elem = self.ElementAt(n);
+            var indent = (n == self.Count - 1) ? "    " : "\u2502   ";
+
+            sb.Append(elem.Title + Environment.NewLine);
+
+            var childCount = elem.Children.Count;
+            for (var i = 0; i < childCount; i++)
+            {
+                PrintTree(elem.Children[i], indent, i == childCount - 1);
+            }
+        }
+
+        return sb.ToString();
+    }
+
+    public static string ToFileString(this EpubToc self)
+    {
+        string result = RemoveExtraBlankLines(
+            $"""
+            <?xml version = "1.0" encoding = "utf-8"?>
+            <ncx xmlns = "http://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
+            <head>
+            <meta content="3" name="dtb:depth" />
+            </head>
+            <docTitle><text></text></docTitle>
+            <docAuthor><text></text></docAuthor>
+            <navMap>
+            {self.Render()}
+            </navMap>
+            </ncx>
+            """);
+
+        return result;
+    }
+
+    #endregion
+
+    # region EpubPage
+    /// <summary>
+    /// Generating a Toc with EpubPage
+    /// </summary>
+    public static EpubToc ToToc(this EpubPage self, int splitLevel)
+    {
+        var toc = new EpubToc();
+        foreach (var pageElem in self.ElemList)
+        {
+            toc.Add(pageElem, splitLevel);
+        }
+
+        return toc;
+    }
+
+    public static string ToTree(this EpubPage self)
+    {
+        var sb = new StringBuilder();
+
+        void PrintTree(EpubPageItem elem, string indent, bool isLast)
+        {
+            string curLine;
+            if (isLast)
+            {
+                curLine = indent + "└─ " + elem.Heading + Environment.NewLine;
+                indent += "    ";
+            }
+            else
+            {
+                curLine = indent + "├─ " + elem.Heading + Environment.NewLine;
+                indent += "|   ";
+            }
+
+            sb.Append(curLine);
+            var childCount = elem.Children.Count;
+
+            for (var i = 0; i < childCount; i++)
+            {
+                PrintTree(elem.Children[i], indent, i == childCount - 1);
+            }
+        }
+
+        for (var i = 0; i < self.Count; i++)
+        {
+            var elem = self.ElementAt(i);
+            var indent = (i == self.Count - 1) ? "    " : "\u2502   ";
+
+            sb.Append(elem.Heading + Environment.NewLine);
+
+            var childCount = elem.Children.Count;
+            for (var n = 0; n < childCount; n++)
+            {
+                PrintTree(elem.Children[n], indent, (n == childCount - 1));
+            }
+        }
+
+        return sb.ToString();
+    }
+    # endregion
 
     public static string RemoveExtraBlankLines(string input)
     {
@@ -21,7 +174,7 @@ static class EpubConvert
         return result;
     }
 
-    # region Convert Html To List<EpubContent>
+    # region Convert EpubPage To List<EpubContent>
     public static List<EpubContentItem> PageToContent(EpubPage htmlPages, int splitLevel)
     {
         var contents = new List<EpubContentItem>();
@@ -35,7 +188,8 @@ static class EpubConvert
         return contents;
     }
 
-    private static int ExtractHtmlSubPage(EpubPageItem pageElem, int chapterNum, int splitLevel, List<EpubContentItem> contents)
+    private static int ExtractHtmlSubPage(EpubPageItem pageElem, int chapterNum, int splitLevel,
+        List<EpubContentItem> contents)
     {
         var epubContent = new EpubContentItem(EpubContentType.Html, $"chapter_{chapterNum}.xhtml", Md2Html(pageElem.Content));
         contents.Add(epubContent);
@@ -65,38 +219,12 @@ static class EpubConvert
     }
     # endregion
 
-    # region Pages To Toc
-    public static string GenerateToc(EpubPage htmlPages, int splitLevel)
-    {
-        var toc = new EpubToc();
-        toc.GenerateFromPage(htmlPages, splitLevel);
+    # region EpubContent
 
-        string result = RemoveExtraBlankLines(
-            $"""
-            <?xml version = "1.0" encoding = "utf-8"?>
-            <ncx xmlns = "http://www.daisy.org/z3986/2005/ncx/" version = "2005-1">
-            <head>
-            <meta content="3" name="dtb:depth" />
-            </head>
-            <docTitle><text></text></docTitle>
-            <docAuthor><text></text></docAuthor>
-            <navMap>
-            {toc.Render()}
-            </navMap>
-            </ncx>
-            """);
-
-        return result;
-    }
-
-    # endregion
-
-    #region Opf
-
-    public static string GenerateOpf(EpubContent epubContents, EpubMetadata epubMetadata)
+    public static string ToOpf(this EpubContent self, EpubMetadata epubMetadata)
     {
         var coverMetadata = "";
-        if (epubContents.Search("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
+        if (self.Search("cover.jpg")) coverMetadata = """<meta name="cover" content="cover.jpg"/>""";
 
         string opf = RemoveExtraBlankLines(
                 $"""
@@ -107,10 +235,10 @@ static class EpubConvert
                 {epubMetadata.ToOpf()}
                 </metadata>
                 <manifest>
-                {GenerateOpfManifest(epubContents)}
+                {self.ToOpfManifest()}
                 </manifest>
                 <spine toc = "ncx">
-                {GenerateOpfSpine(epubContents)}
+                {self.ToOpfSpine()}
                 </spine>
                 </package>
                 """);
@@ -118,17 +246,42 @@ static class EpubConvert
         return opf;
     }
 
-    public static string GenerateOpfManifest(EpubContent epubContents)
+    public static string ToOpfManifest(this EpubContent self)
     {
-        return string.Join(Environment.NewLine, epubContents.Select(content => content.ManifestItem));
+        return string.Join(Environment.NewLine, self.Select(ToOpfManifestItem));
     }
 
-    public static string GenerateOpfSpine(EpubContent epubContents)
+    public static string ToOpfSpine(this EpubContent epubContents)
     {
-        return string.Join(Environment.NewLine, epubContents.Select(content => content.SpineItem));
+        return string.Join(Environment.NewLine, epubContents.Select(ToOpfSpineItem));
+    }
+    # endregion
+
+    # region EpubContentItem
+    public static string ToOpfManifestItem(this EpubContentItem self)
+    {
+        return self.Type switch
+        {
+            EpubContentType.Html =>
+                $"""<item href = "Text/{self.FileName}" id = "{self.FileName}" media-type="application/xhtml+xml"/>""",
+            EpubContentType.Image =>
+                $"""<item href="Image/{self.FileName}" id="{self.FileName}" media-type="image/jpeg"/>""",
+            EpubContentType.Ncx => $"""<item href="{self.FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
+            EpubContentType.Css => $"""<item href="Styles/{self.FileName}" id="stylesheet"  media-type="text/css"/>""",
+            _ => string.Empty
+        };
+
     }
 
-    #endregion
+    public static string ToOpfSpineItem(this EpubContentItem self)
+    {
+        return self.Type switch
+        {
+            EpubContentType.Html => $"""<itemref idref = "{self.FileName}"/>""",
+            _ => string.Empty
+        };
+    }
+    # endregion
 
     #region Markdown To Html
 

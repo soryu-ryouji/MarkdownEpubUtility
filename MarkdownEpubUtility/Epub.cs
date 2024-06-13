@@ -6,13 +6,13 @@ namespace MarkdownEpubUtility;
 
 public class Epub
 {
-    public EpubMetadata EpubData;
+    public EpubMetadata Metadata;
     public BuildMetadata BuildData;
     public EpubContent Content = [];
 
     public Epub(EpubMetadata epubData, BuildMetadata buildData)
     {
-        this.EpubData = epubData;
+        this.Metadata = epubData;
         this.BuildData = buildData;
 
         Content.Init();
@@ -29,8 +29,8 @@ public class Epub
 
         // Toc needs to be generated before the opf file is generated
         // otherwise it won't be added to the list
-        Content.Add(new(EpubContentType.Ncx, "toc.ncx", EpubConvert.GenerateToc(pages, BuildData.SplitLevel)));
-        Content.Add(new(EpubContentType.Opf, "content.opf", EpubConvert.GenerateOpf(Content, EpubData)));
+        Content.Add(new(EpubContentType.Ncx, "toc.ncx", pages.ToToc(BuildData.SplitLevel).ToFileString()));
+        Content.Add(new(EpubContentType.Opf, "content.opf", Content.ToOpf(Metadata)));
     }
 
     private ZipFile PackContent()
@@ -38,7 +38,7 @@ public class Epub
         var zip = new ZipFile(Encoding.UTF8)
         {
             CompressionLevel = CompressionLevel.Level0,
-            Name = $"{EpubData.Title}.epub"
+            Name = $"{Metadata.Title}.epub"
         };
 
         zip.AddDirectoryByName("META-INF");

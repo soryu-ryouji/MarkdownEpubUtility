@@ -14,17 +14,19 @@ public class TocTest
     [Fact]
     public void TocToString_Test()
     {
-        var toc = new EpubToc();
-        toc.Add(new EpubTocItem("", "Page_1", 1));
-        toc.Add(new EpubTocItem("", "Page_2", 2));
-        toc.Add(new EpubTocItem("", "Page_3", 2));
-        toc.Add(new EpubTocItem("", "Page_4", 2));
-        toc.Add(new EpubTocItem("", "Page_5", 1));
-        toc.Add(new EpubTocItem("", "Page_6", 2));
-        toc.Add(new EpubTocItem("", "Page_7", 3));
-        toc.Add(new EpubTocItem("", "Page_8", 4));
+        var toc = new EpubToc
+        {
+            new EpubTocItem("", "Page_1", 1),
+            new EpubTocItem("", "Page_2", 2),
+            new EpubTocItem("", "Page_3", 2),
+            new EpubTocItem("", "Page_4", 2),
+            new EpubTocItem("", "Page_5", 1),
+            new EpubTocItem("", "Page_6", 2),
+            new EpubTocItem("", "Page_7", 3),
+            new EpubTocItem("", "Page_8", 4)
+        };
 
-        var tree = toc.ToString();
+        string tree = toc.ToTree();
 
         var resultStr =
             """

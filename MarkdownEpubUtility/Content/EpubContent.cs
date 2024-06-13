@@ -5,12 +5,12 @@ namespace MarkdownEpubUtility;
 
 public class EpubContent : IEnumerable<EpubContentItem>
 {
-    private List<EpubContentItem> _content = [];
+    private List<EpubContentItem> _contentItems = [];
 
     public void Init()
     {
-        _content.Add(new EpubContentItem(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
-        _content.Add(new EpubContentItem(EpubContentType.Container, "container.xml",
+        _contentItems.Add(new EpubContentItem(EpubContentType.Mimetype, "mimetype", "application/epub+zip"));
+        _contentItems.Add(new EpubContentItem(EpubContentType.Container, "container.xml",
             """
             <?xml version="1.0"?>
             <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
@@ -19,7 +19,7 @@ public class EpubContent : IEnumerable<EpubContentItem>
                 </rootfiles>
             </container>
             """));
-        _content.Add(new(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
+        _contentItems.Add(new(EpubContentType.Css, "stylesheet.css", CssCreator.GenerateStyleSheet()));
     }
 
     public void AddImage(string fileName, string imagePath)
@@ -33,17 +33,12 @@ public class EpubContent : IEnumerable<EpubContentItem>
             _ => throw new DataException("Only jpg and png images can be used")
         };
 
-        _content.Add(new EpubContentItem(contentType, $"{fileName}{fileExtension}", File.ReadAllBytes(imagePath)));
-    }
-
-    public override string ToString()
-    {
-        return string.Join(Environment.NewLine, _content.Select(content => content.SpineItem));
+        _contentItems.Add(new EpubContentItem(contentType, $"{fileName}{fileExtension}", File.ReadAllBytes(imagePath)));
     }
 
     public bool Search(string fileName)
     {
-        foreach (var temp in _content)
+        foreach (var temp in _contentItems)
         {
             if (temp.FileName == fileName) return true;
         }
@@ -51,10 +46,10 @@ public class EpubContent : IEnumerable<EpubContentItem>
         return false;
     }
 
-    public void Add(EpubContentItem content) => _content.Add(content);
-    public void AddRange(IEnumerable<EpubContentItem> contents) => _content.AddRange(contents);
+    public void Add(EpubContentItem content) => _contentItems.Add(content);
+    public void AddRange(IEnumerable<EpubContentItem> contents) => _contentItems.AddRange(contents);
 
-    public IEnumerator<EpubContentItem> GetEnumerator() => _content.GetEnumerator();
+    public IEnumerator<EpubContentItem> GetEnumerator() => _contentItems.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

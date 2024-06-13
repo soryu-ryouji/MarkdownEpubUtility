@@ -19,17 +19,6 @@ public class EpubContentItem
     public readonly EpubContentType Type;
     public string FileName;
     public byte[] Content;
-    public string SpineItem => Type is EpubContentType.Html ? $"""<itemref idref = "{FileName}"/>""" : string.Empty;
-
-    public string ManifestItem => Type switch
-    {
-        EpubContentType.Html =>
-            $"""<item href = "Text/{FileName}" id = "{FileName}" media-type="application/xhtml+xml"/>""",
-        EpubContentType.Image => $"""<item href="Image/{FileName}" id="{FileName}" media-type="image/jpeg"/>""",
-        EpubContentType.Ncx => $"""<item href="{FileName}" id="ncx" media-type="application/x-dtbncx+xml"/>""",
-        EpubContentType.Css => $"""<item href="Styles/{FileName}" id="stylesheet"  media-type="text/css"/>""",
-        _ => string.Empty
-    };
 
     public override string ToString()
     {
