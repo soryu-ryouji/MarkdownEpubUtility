@@ -24,7 +24,7 @@ var buildPath = @"D:\TheArtofUnixProgramming.epub";
 
 var buildMetadata = new BuildMetadata(mdPath, coverPath, pageSplitLevel:1);
 
-var epub = new Epub(epubMetadata, buildMetadata);
+var epub = new EpubBook(epubMetadata, buildMetadata);
 epub.CreateEpub().Save(buildPath);
 ```
 
