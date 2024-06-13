@@ -8,6 +8,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Version>0.1.3</Version>
+    <RepositoryType>
+    https://github.com/soryu-ryouji/MarkdownEpubUtility/
+    </RepositoryType>
+    <Description>
+    A .NET library for converting epub and markdown to each other.
+    </Description>
   </PropertyGroup>
 
   <ItemGroup>
