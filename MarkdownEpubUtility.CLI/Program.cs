@@ -71,7 +71,7 @@ class Program
 
     private static void BuildEpub(EpubMetadata epubMetadata, BuildMetadata buildMetadata, string buildPath)
     {
-        var epub = new Epub(epubMetadata, buildMetadata);
+        var epub = new EpubBook(epubMetadata, buildMetadata);
         epub.CreateEpub().Save(buildPath);
     }
 

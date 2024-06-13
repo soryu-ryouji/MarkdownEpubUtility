@@ -4,16 +4,16 @@ using Ionic.Zip;
 
 namespace MarkdownEpubUtility;
 
-public class Epub
+public class EpubBook
 {
     public EpubMetadata Metadata;
     public BuildMetadata BuildData;
     public EpubContent Content = [];
 
-    public Epub(EpubMetadata epubData, BuildMetadata buildData)
+    public EpubBook(EpubMetadata epubData, BuildMetadata buildData)
     {
-        this.Metadata = epubData;
-        this.BuildData = buildData;
+        Metadata = epubData;
+        BuildData = buildData;
 
         Content.Init();
     }
