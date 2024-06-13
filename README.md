@@ -2,6 +2,8 @@
 
 ## Markdown Epub Utility
 
+[![NuGet Version](https://img.shields.io/nuget/v/MarkdownEpubUtility)](https://www.nuget.org/packages/MarkdownEpubUtility)
+
 [简体中文](./README-zh.md)
 
 Markdown Epub Utility is a cross platform library that converts Markdown documents into Epub e-books.
