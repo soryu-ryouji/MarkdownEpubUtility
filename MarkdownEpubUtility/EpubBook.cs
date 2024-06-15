@@ -133,4 +133,9 @@ public class EpubBook
 
         return book;
     }
+
+    public List<EpubContentItem> ExtractImage()
+    {
+        return Content.Where(item => item.Type == EpubContentType.Image).ToList();
+    }
 }
