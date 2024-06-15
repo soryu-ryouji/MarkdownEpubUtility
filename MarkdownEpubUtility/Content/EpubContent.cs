@@ -46,6 +46,16 @@ public class EpubContent : IEnumerable<EpubContentItem>
         return false;
     }
 
+    public EpubContentItem Get(string fileName)
+    {
+        foreach (var temp in _contentItems)
+        {
+            if (temp.FileName == fileName) return temp;
+        }
+
+        return new EpubContentItem(EpubContentType.Unknow, "", "");
+    }
+
     public void Add(EpubContentItem content) => _contentItems.Add(content);
     public void AddRange(IEnumerable<EpubContentItem> contents) => _contentItems.AddRange(contents);
 
