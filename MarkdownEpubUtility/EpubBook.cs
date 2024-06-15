@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Text;
 
 namespace MarkdownEpubUtility;
 
@@ -126,9 +127,12 @@ public class EpubBook
             }
         }
 
+        var metadata = EpubMetadata.ParseXml(Encoding.UTF8.GetString(epubContent.Get("content.opf").Content));
+
         var book = new EpubBook(new EpubMetadata())
         {
-            Content = epubContent
+            Content = epubContent,
+            Metadata = metadata
         };
 
         return book;

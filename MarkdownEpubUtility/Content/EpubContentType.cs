@@ -9,4 +9,5 @@ public enum EpubContentType
     Container,
     Opf,
     Css,
+    Unknow,
 }

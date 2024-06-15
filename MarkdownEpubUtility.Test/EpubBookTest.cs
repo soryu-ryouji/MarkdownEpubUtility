@@ -18,7 +18,7 @@ public class EpubBookTest
         var book = EpubBook.OpenBook("../../../res/动物化的后现代.epub");
         foreach (var content in book.Content)
         {
-            if (content.Type == EpubContentType.Html) _output.WriteLine(Encoding.UTF8.GetString(content.Content));
+            // if (content.Type == EpubContentType.Html) _output.WriteLine(Encoding.UTF8.GetString(content.Content));
         }
     }
 
@@ -41,7 +41,7 @@ public class EpubBookTest
         foreach (var image in items)
         {
             var filePath = Path.Combine("../../../res/image/", image.FileName);
-            File.WriteAllBytes(filePath, image.Content);
+            // File.WriteAllBytes(filePath, image.Content);
         }
     }
 }
