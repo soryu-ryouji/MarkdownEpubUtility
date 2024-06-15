@@ -1,6 +1,4 @@
-﻿using System.Text;
-using Ionic.Zlib;
-using Ionic.Zip;
+﻿using System.IO.Compression;
 
 namespace MarkdownEpubUtility;
 
@@ -33,42 +31,47 @@ public class EpubBook
         Content.Add(new(EpubContentType.Opf, "content.opf", Content.ToOpf(Metadata)));
     }
 
-    private ZipFile PackContent()
+    private MemoryStream PackContent()
     {
-        var zip = new ZipFile(Encoding.UTF8)
+        var memoryStream = new MemoryStream();
+        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
-            CompressionLevel = CompressionLevel.Level0,
-            Name = $"{Metadata.Title}.epub"
-        };
-
-        zip.AddDirectoryByName("META-INF");
-        zip.AddDirectoryByName("OEBPS");
-        zip.AddDirectoryByName("OEBPS/Text");
-        zip.AddDirectoryByName("OEBPS/Image");
-        zip.AddDirectoryByName("OEBPS/Styles");
-
-        foreach (var item in Content)
-        {
-            switch (item.Type)
+            // Add other EPUB content
+            foreach (var item in Content)
             {
-                case EpubContentType.Mimetype: zip.AddEntry($"{item.FileName}", item.Content); break;
-                case EpubContentType.Container: zip.AddEntry($"META-INF/{item.FileName}", item.Content); break;
-                case EpubContentType.Image: zip.AddEntry($"OEBPS/Image/{item.FileName}", item.Content); break;
-                case EpubContentType.Css: zip.AddEntry($"OEBPS/Styles/{item.FileName}", item.Content); break;
-                case EpubContentType.Html: zip.AddEntry($"OEBPS/Text/{item.FileName}", item.Content); break;
-                case EpubContentType.Opf: zip.AddEntry($"OEBPS/{item.FileName}", item.Content); break;
-                case EpubContentType.Ncx: zip.AddEntry($"OEBPS/{item.FileName}", item.Content); break;
-                default: throw new ArgumentOutOfRangeException($"{item.Type} cannot be added to epub zip");
+                string entryName = item.Type switch
+                {
+                    EpubContentType.Mimetype => $"{item.FileName}",
+                    EpubContentType.Container => $"META-INF/{item.FileName}",
+                    EpubContentType.Image => $"OEBPS/Image/{item.FileName}",
+                    EpubContentType.Css => $"OEBPS/Styles/{item.FileName}",
+                    EpubContentType.Html => $"OEBPS/Text/{item.FileName}",
+                    EpubContentType.Opf => $"OEBPS/{item.FileName}",
+                    EpubContentType.Ncx => $"OEBPS/{item.FileName}",
+                    _ => throw new ArgumentOutOfRangeException($"{item.Type} cannot be added to epub zip")
+                };
+
+                var entry = archive.CreateEntry(entryName);
+                using (var entryStream = entry.Open())
+                {
+                    entryStream.Write(item.Content, 0, item.Content.Length);
+                }
             }
         }
 
-        return zip;
+        memoryStream.Position = 0;
+        return memoryStream;
     }
 
-    public ZipFile CreateEpub()
+    public void CreateEpub(string filePath)
     {
         GenerateContent();
-        var epubFile = PackContent();
-        return epubFile;
+        using (var epubStream = PackContent())
+        {
+            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+            {
+                epubStream.CopyTo(fileStream);
+            }
+        }
     }
 }
