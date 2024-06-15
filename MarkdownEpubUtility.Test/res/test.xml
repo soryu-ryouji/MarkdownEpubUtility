@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="uuid_id" version="2.0">
+    <metadata xmlns:dc="https://purl.org/dc/elements/1.1/">
+        <meta name="cover" content="cover.jpg" />
+        <dc:title>动物化的后现代</dc:title>
+        <dc:creator>EpubBuilder</dc:creator>
+        <dc:language>zh</dc:language>
+        <dc:publisher>EpubBuilder</dc:publisher>
+    </metadata>
+    <manifest>
+        <item href="Styles/stylesheet.css" id="stylesheet" media-type="text/css" />
+        <item href="Image/image_0.jpg" id="image_0.jpg" media-type="image/jpeg" />
+        <item href="Image/image_1.jpg" id="image_1.jpg" media-type="image/jpeg" />
+        <item href="Image/image_2.jpg" id="image_2.jpg" media-type="image/jpeg" />
+        <item href="Image/image_3.jpg" id="image_3.jpg" media-type="image/jpeg" />
+        <item href="Image/image_4.jpg" id="image_4.jpg" media-type="image/jpeg" />
+        <item href="Image/image_5.jpg" id="image_5.jpg" media-type="image/jpeg" />
+        <item href="Image/image_6.jpg" id="image_6.jpg" media-type="image/jpeg" />
+        <item href="Image/image_7.jpg" id="image_7.jpg" media-type="image/jpeg" />
+        <item href="Image/image_8.jpg" id="image_8.jpg" media-type="image/jpeg" />
+        <item href="Image/image_9.jpg" id="image_9.jpg" media-type="image/jpeg" />
+        <item href="Image/image_10.jpg" id="image_10.jpg" media-type="image/jpeg" />
+        <item href="Image/image_11.jpg" id="image_11.jpg" media-type="image/jpeg" />
+        <item href="Image/image_12.jpg" id="image_12.jpg" media-type="image/jpeg" />
+        <item href="Image/image_13.jpg" id="image_13.jpg" media-type="image/jpeg" />
+        <item href="Image/image_14.jpg" id="image_14.jpg" media-type="image/jpeg" />
+        <item href="Image/image_15.jpg" id="image_15.jpg" media-type="image/jpeg" />
+        <item href="Image/image_16.jpg" id="image_16.jpg" media-type="image/jpeg" />
+        <item href="Image/image_17.jpg" id="image_17.jpg" media-type="image/jpeg" />
+        <item href="Image/image_18.jpg" id="image_18.jpg" media-type="image/jpeg" />
+        <item href="Image/image_19.jpg" id="image_19.jpg" media-type="image/jpeg" />
+        <item href="Image/image_20.jpg" id="image_20.jpg" media-type="image/jpeg" />
+        <item href="Image/image_21.jpg" id="image_21.jpg" media-type="image/jpeg" />
+        <item href="Image/image_22.jpg" id="image_22.jpg" media-type="image/jpeg" />
+        <item href="Image/image_23.jpg" id="image_23.jpg" media-type="image/jpeg" />
+        <item href="Image/image_24.jpg" id="image_24.jpg" media-type="image/jpeg" />
+        <item href="Image/image_25.jpg" id="image_25.jpg" media-type="image/jpeg" />
+        <item href="Image/image_26.jpg" id="image_26.jpg" media-type="image/jpeg" />
+        <item href="Text/chapter_0.xhtml" id="chapter_0.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_1.xhtml" id="chapter_1.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_2.xhtml" id="chapter_2.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_3.xhtml" id="chapter_3.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_4.xhtml" id="chapter_4.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_5.xhtml" id="chapter_5.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_6.xhtml" id="chapter_6.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_7.xhtml" id="chapter_7.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_8.xhtml" id="chapter_8.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_9.xhtml" id="chapter_9.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_10.xhtml" id="chapter_10.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_11.xhtml" id="chapter_11.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_12.xhtml" id="chapter_12.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_13.xhtml" id="chapter_13.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_14.xhtml" id="chapter_14.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_15.xhtml" id="chapter_15.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_16.xhtml" id="chapter_16.xhtml" media-type="application/xhtml+xml" />
+        <item href="Text/chapter_17.xhtml" id="chapter_17.xhtml" media-type="application/xhtml+xml" />
+        <item href="Image/cover.jpg" id="cover.jpg" media-type="image/jpeg" />
+        <item href="toc.ncx" id="ncx" media-type="application/x-dtbncx+xml" />
+    </manifest>
+    <spine toc="ncx">
+        <itemref idref="chapter_0.xhtml" />
+        <itemref idref="chapter_1.xhtml" />
+        <itemref idref="chapter_2.xhtml" />
+        <itemref idref="chapter_3.xhtml" />
+        <itemref idref="chapter_4.xhtml" />
+        <itemref idref="chapter_5.xhtml" />
+        <itemref idref="chapter_6.xhtml" />
+        <itemref idref="chapter_7.xhtml" />
+        <itemref idref="chapter_8.xhtml" />
+        <itemref idref="chapter_9.xhtml" />
+        <itemref idref="chapter_10.xhtml" />
+        <itemref idref="chapter_11.xhtml" />
+        <itemref idref="chapter_12.xhtml" />
+        <itemref idref="chapter_13.xhtml" />
+        <itemref idref="chapter_14.xhtml" />
+        <itemref idref="chapter_15.xhtml" />
+        <itemref idref="chapter_16.xhtml" />
+        <itemref idref="chapter_17.xhtml" />
+    </spine>
+</package>
